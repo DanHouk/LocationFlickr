@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Location Flickr</string>
+    <string name="ok">Ok</string>
+    <string name="failed_connection">Connection failed.</string>
+    <string name="no_connection">No connection.</string>
+    <string name="location_error">Location error!</string>
+    <string name="gps_and_network_disabled">GPS and Network disabled!</string>
+    <string name="connection_error">Server connection failed</string>
+    <string name="refresh_page">Refresh</string>
+    <string name="about">About</string>
+    <string name="failed_to_retrieve_data">Image retrieval failure.</string>
+    <string name="last_page">No more pages to load.</string>
+    <string name="thumbnail_failed">Thumbnail retrieval failed.</string>
+    <string name="no_thumbnails">Unable to retrieve the Thumbnails.</string>
+    <string name="url_creation_failed">Invalid URL</string>
+    <string name="title_activity_image_detail_view">ImageDetailView</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="full_image">Full Image</string>
+    <string name="users_name_header">User name:</string>
+    <string name="real_name_header">Real name:</string>
+    <string name="taken_date_header">Taken:</string>
+    <string name="posted_date_header">Posted:</string>
+    <string name="secret_header">Secret:</string>
+    <string name="original_secret_header">Original secret:</string>
+    <string name="not_available">N/A</string>
+    <string name="refreshing_please_wait">ReSyncing data.  Please wait.</string>
+    <string name="sync_in_progress">Sync in progress!</string>
+</resources>

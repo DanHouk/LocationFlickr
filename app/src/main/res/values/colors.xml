@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="flickr_blue">#0063dc</color>
+    <color name="flickr_pink">#ff0084</color>
+    <color name="flickr_gray">#999999</color>
+</resources>

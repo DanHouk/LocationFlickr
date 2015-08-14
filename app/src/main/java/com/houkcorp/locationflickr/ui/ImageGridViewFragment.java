@@ -308,6 +308,7 @@ public class ImageGridViewFragment extends Fragment {
             mFlickrImageHolder = new FlickrImageHolder();
             pageNumber = 1;
             imageViewAdapter.clear();
+            imageViewAdapter.notifyDataSetChanged();
 
             handleFetchImages();
         } else {

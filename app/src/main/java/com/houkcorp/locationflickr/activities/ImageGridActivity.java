@@ -1,24 +1,32 @@
-package com.houkcorp.locationflickr.ui;
+package com.houkcorp.locationflickr.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.houkcorp.locationflickr.R;
+import com.houkcorp.locationflickr.fragments.ImageGridViewFragment;
+import com.houkcorp.locationflickr.util.UIUtils;
 
-public class ImageGridView extends AppCompatActivity implements ImageGridViewFragment.TaskCallbacks {
+public class ImageGridActivity extends BaseActivity implements ImageGridViewFragment.TaskCallbacks {
     private static final String IMAGE_GRID_VIEW_FRAGMENT = "image_grid_view_fragment";
     private ImageGridViewFragment mImageGridViewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_grid_view);
+
+        if(savedInstanceState == null) {
+            addFragment();
+        }
+    }
+
+    @Override
+    protected int getLayoutResources() {
+        return R.layout.activity_image_grid_view;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class ImageGridView extends AppCompatActivity implements ImageGridViewFra
                     displayMessage += "N/A";
                 }
 
-                showDialogMessage(R.string.about, displayMessage);
+                UIUtils.showDialogMessage(this, R.string.about, displayMessage);
 
                 break;
             }
@@ -52,7 +60,7 @@ public class ImageGridView extends AppCompatActivity implements ImageGridViewFra
             case R.id.refresh_menu: {
                 ImageGridViewFragment imageGridViewFragment =
                         (ImageGridViewFragment)getSupportFragmentManager()
-                                .findFragmentById(R.id.image_grid_fragment_id);
+                                .findFragmentByTag(IMAGE_GRID_VIEW_FRAGMENT);
                 if(imageGridViewFragment != null) {
                     imageGridViewFragment.clearListAndReQuery();
                 }
@@ -64,19 +72,13 @@ public class ImageGridView extends AppCompatActivity implements ImageGridViewFra
         return super.onOptionsItemSelected(item);
     }
 
-    private void showDialogMessage(int titleResourceInt, String message) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this)
-                .setTitle(titleResourceInt)
-                .setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+    /**
+     * Adds the fragment to the activity
+     */
+    private void addFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = ImageGridViewFragment.newInstance();
+        fragmentManager.beginTransaction().add(R.id.image_grid_fragment_id, fragment, IMAGE_GRID_VIEW_FRAGMENT).commit();
     }
 
     @Override

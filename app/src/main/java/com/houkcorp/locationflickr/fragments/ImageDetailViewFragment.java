@@ -1,4 +1,4 @@
-package com.houkcorp.locationflickr.ui;
+package com.houkcorp.locationflickr.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,7 +42,8 @@ public class ImageDetailViewFragment extends Fragment {
     private TextView takenDateTextView;
     private TextView userNameTextView;
 
-    public ImageDetailViewFragment() {
+    public static ImageDetailViewFragment newInstance() {
+        return new ImageDetailViewFragment();
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.houkcorp.locationflickr.Constants;
@@ -43,6 +44,9 @@ import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class ImageGridViewFragment extends Fragment {
+    private GridView mImageGridView;
+    private ProgressBar mProgressBar;
+
     public static ImageGridViewFragment newInstance() {
         return new ImageGridViewFragment();
     }
@@ -90,10 +94,12 @@ public class ImageGridViewFragment extends Fragment {
         View gridLayoutView = inflater.inflate(R.layout.fragment_image_grid_view, container, false);
         mImageBaseViewAdapter =
                 new ImageBaseViewAdapter(getActivity(), mFlickrImages);
-        final GridView imageGridView = (GridView)gridLayoutView.findViewById(R.id.image_grid_view_id);
-        imageGridView.setAdapter(mImageBaseViewAdapter);
+        mImageGridView = (GridView)gridLayoutView.findViewById(R.id.image_grid_view);
+        mImageGridView.setAdapter(mImageBaseViewAdapter);
 
-        imageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mProgressBar = (ProgressBar) gridLayoutView.findViewById(R.id.image_grid_progressbar);
+
+        mImageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
@@ -108,7 +114,7 @@ public class ImageGridViewFragment extends Fragment {
             }
         });
 
-        imageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mImageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FlickrImage selectedImage = mFlickrImageHolder.getPhotos().get(position);
@@ -171,7 +177,6 @@ public class ImageGridViewFragment extends Fragment {
 
     private void fetchImagesInBackground(final URL url) throws IOException, NoSuchAlgorithmException,
             KeyManagementException, XmlPullParserException {
-        System.out.print("H");
         new AsyncTask<Void, Void, FlickrImageHolder>() {
             @Override
             protected FlickrImageHolder doInBackground(Void... params) {
@@ -194,6 +199,14 @@ public class ImageGridViewFragment extends Fragment {
             @Override
             protected void onPostExecute(FlickrImageHolder flickrImageHolder) {
                 super.onPostExecute(flickrImageHolder);
+                if(mProgressBar != null) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+
+                if(mImageGridView != null) {
+                    mImageGridView.setVisibility(View.VISIBLE);
+                }
+
                 for(FlickrImage flickrImage : flickrImageHolder.getPhotos()) {
                     fetchThumbnailsInBackground(flickrImage);
                     PhotosData photosData = flickrImageHolder.getPhotosData();
@@ -209,7 +222,6 @@ public class ImageGridViewFragment extends Fragment {
                 mLoadMoreCalled = false;
             }
         }.execute(null, null, null);
-        System.out.print("H");
     }
 
     private void fetchThumbnailsInBackground(final FlickrImage flickrImage) {

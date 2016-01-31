@@ -1,56 +1,54 @@
 package com.houkcorp.locationflickr.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.houkcorp.locationflickr.Constants;
 import com.houkcorp.locationflickr.R;
+import com.houkcorp.locationflickr.activities.ImageDetailActivity;
 import com.houkcorp.locationflickr.adapters.ImageBaseViewAdapter;
 import com.houkcorp.locationflickr.model.FlickrImage;
-import com.houkcorp.locationflickr.model.FlickrImageHolder;
+import com.houkcorp.locationflickr.model.FlickrImageSearch;
+import com.houkcorp.locationflickr.model.FlickrImageSearchBasicInfo;
+import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
 import com.houkcorp.locationflickr.model.LocationHolder;
-import com.houkcorp.locationflickr.model.PhotosData;
-import com.houkcorp.locationflickr.model.handler.FlickrImageHandler;
-import com.houkcorp.locationflickr.activities.ImageDetailActivity;
+import com.houkcorp.locationflickr.service.PhotoService;
+import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.houkcorp.locationflickr.util.LocationTracker;
-import com.houkcorp.locationflickr.util.NetworkUtilities;
 
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Locale;
 
-import javax.xml.parsers.ParserConfigurationException;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ImageGridViewFragment extends Fragment {
+    private GridView mImageGridView;
+    private ProgressBar mProgressBar;
+
     public static ImageGridViewFragment newInstance() {
         return new ImageGridViewFragment();
     }
 
-    private ArrayList<FlickrImage> mFlickrImages;
+    private ArrayList<FlickrImageSearchPhoto> mFlickrImages;
     private ImageBaseViewAdapter mImageBaseViewAdapter;
     private int mPageNumber = 1;
-    private FlickrImageHolder mFlickrImageHolder;
+    private FlickrImageSearch mFlickrImageSearch;
     private boolean mLoadMoreCalled = false;
     private TaskCallbacks mCallbacks;
     private SendBackTask mTask;
@@ -66,16 +64,16 @@ public class ImageGridViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState != null) {
+        /*if(savedInstanceState != null) {
             mFlickrImageHolder = savedInstanceState.getParcelable(Constants.FLICKR_IMAGE);
             if(mFlickrImageHolder != null) {
                 mFlickrImages = mFlickrImageHolder.getPhotos();
             }
 
-        } else {
+        } else*/
+        if(savedInstanceState == null) {
             mFlickrImages = new ArrayList<>();
         }
-
 
         setRetainInstance(true);
         mTask = new SendBackTask();
@@ -90,31 +88,33 @@ public class ImageGridViewFragment extends Fragment {
         View gridLayoutView = inflater.inflate(R.layout.fragment_image_grid_view, container, false);
         mImageBaseViewAdapter =
                 new ImageBaseViewAdapter(getActivity(), mFlickrImages);
-        final GridView imageGridView = (GridView)gridLayoutView.findViewById(R.id.image_grid_view_id);
-        imageGridView.setAdapter(mImageBaseViewAdapter);
+        mImageGridView = (GridView)gridLayoutView.findViewById(R.id.image_grid_view);
+        mImageGridView.setAdapter(mImageBaseViewAdapter);
 
-        imageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mProgressBar = (ProgressBar) gridLayoutView.findViewById(R.id.image_grid_progressbar);
+
+        mImageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mFlickrImageHolder != null && (firstVisibleItem + visibleItemCount) >=
-                        mFlickrImageHolder.getPhotos().size() && !mLoadMoreCalled) {
+                if(mFlickrImageSearch != null && (firstVisibleItem + visibleItemCount) >=
+                        mFlickrImageSearch.getPhotos().getPhoto().size() && !mLoadMoreCalled) {
                     mLoadMoreCalled = true;
                     handleFetchImages();
                 }
             }
         });
 
-        imageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mImageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FlickrImage selectedImage = mFlickrImageHolder.getPhotos().get(position);
+                FlickrImageSearchPhoto selectedImage = mFlickrImageSearch.getPhotos().getPhoto().get(position);
                 if (selectedImage != null) {
                     Intent detailIntent = new Intent(getActivity(), ImageDetailActivity.class);
-                    detailIntent.putExtra(Constants.FLICKR_IMAGE, selectedImage);
+                    //detailIntent.putExtra(Constants.FLICKR_IMAGE, selectedImage);
 
                     startActivity(detailIntent);
                 }
@@ -122,12 +122,6 @@ public class ImageGridViewFragment extends Fragment {
         });
 
         return gridLayoutView;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mCallbacks = (TaskCallbacks)activity;
     }
 
     @Override
@@ -139,119 +133,13 @@ public class ImageGridViewFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Constants.FLICKR_IMAGE, mFlickrImageHolder);
-    }
-
-    private URL buildImageURL() {
-        LocationTracker locationTracker = new LocationTracker(getActivity());
-        LocationHolder locationHolder = locationTracker.getLocation();
-
-        URL url = null;
-        if(locationHolder != null) {
-            try {
-                url = new URL(Constants.PHOTOS_SEARCH_URL + "&bbox=" +
-                        Double.toString(locationHolder.longitude - 0.2) + "," +
-                        Double.toString(locationHolder.latitude - 0.2) + "," +
-                        Double.toString(locationHolder.longitude + 0.2) + "," +
-                        Double.toString(locationHolder.latitude + 0.2) + "&page=" +
-                        mPageNumber);
-            } catch(MalformedURLException malformedException) {
-                Toast.makeText(getActivity(), R.string.url_creation_failed, Toast.LENGTH_LONG).show();
-            }
-        } else {
-            try {
-                url = new URL(Constants.PHOTOS_SEARCH_URL + "&page=" + mPageNumber);
-            } catch(MalformedURLException malformedException) {
-                Toast.makeText(getActivity(), R.string.url_creation_failed, Toast.LENGTH_LONG).show();
-            }
-        }
-
-        return url;
-    }
-
-    private void fetchImagesInBackground(final URL url) throws IOException, NoSuchAlgorithmException,
-            KeyManagementException, XmlPullParserException {
-        System.out.print("H");
-        new AsyncTask<Void, Void, FlickrImageHolder>() {
-            @Override
-            protected FlickrImageHolder doInBackground(Void... params) {
-                FlickrImageHolder flickrImageHolder = null;
-                try {
-                    InputStream inputStream = NetworkUtilities.handleHttpGet(url);
-                    if(inputStream != null) {
-                        FlickrImageHandler flickrImageHandler = new FlickrImageHandler();
-                        flickrImageHolder = flickrImageHandler.parse(inputStream);
-                        inputStream.close();
-                    }
-                } catch(IOException | XmlPullParserException | SAXException |
-                        ParserConfigurationException ioException) {
-                    Log.e("Image Grid View", "doInBackground", ioException);
-                }
-
-                return flickrImageHolder;
-            }
-
-            @Override
-            protected void onPostExecute(FlickrImageHolder flickrImageHolder) {
-                super.onPostExecute(flickrImageHolder);
-                for(FlickrImage flickrImage : flickrImageHolder.getPhotos()) {
-                    fetchThumbnailsInBackground(flickrImage);
-                    PhotosData photosData = flickrImageHolder.getPhotosData();
-                    if(mPageNumber < photosData.getPage() && mPageNumber <= photosData.getPages()) {
-                        mPageNumber++;
-                    } else if(photosData.getPages() == mPageNumber) {
-                        Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }
-
-                mFlickrImageHolder = flickrImageHolder;
-                mLoadMoreCalled = false;
-            }
-        }.execute(null, null, null);
-        System.out.print("H");
-    }
-
-    private void fetchThumbnailsInBackground(final FlickrImage flickrImage) {
-        System.out.print("H");
-        new AsyncTask<Void, Void, FlickrImage>() {
-            @Override
-            protected FlickrImage doInBackground(Void... params) {
-                try {
-                    URL url = buildURL(flickrImage);
-
-                    InputStream inputStream = NetworkUtilities.handleHttpGet(url);
-                    if(inputStream != null) {
-                        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                        flickrImage.setBitmap(BitmapFactory.decodeStream(bufferedInputStream));
-                        bufferedInputStream.close();
-                        inputStream.close();
-                    }
-                } catch(IOException ioException) {
-                    Toast.makeText(getActivity(), R.string.thumbnail_failed, Toast.LENGTH_LONG)
-                            .show();
-                }
-
-                return flickrImage;
-            }
-
-            @Override
-            protected void onPostExecute(FlickrImage image) {
-                super.onPostExecute(image);
-                mFlickrImageHolder.addPhoto(flickrImage);
-
-                mImageBaseViewAdapter.clearArray();
-                mImageBaseViewAdapter.addFlickrImages(mFlickrImageHolder.getPhotos());
-                mImageBaseViewAdapter.notifyDataSetChanged();
-            }
-        }.execute(null, null, null);
-        System.out.print("H");
+        //outState.putParcelable(Constants.FLICKR_IMAGE, mFlickrImageHolder);
     }
 
     private URL buildURL(FlickrImage flickrImage) {
         URL url = null;
         try {
-            String stringURL = String.format(Constants.DEFAULT_IMAGE_URL, flickrImage.getFarm(),
+            String stringURL = String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL, flickrImage.getFarm(),
                     flickrImage.getServer(), flickrImage.getId(), flickrImage.getSecret(), "t");
             url = new URL(stringURL);
         } catch(MalformedURLException malformedURLException) {
@@ -262,19 +150,57 @@ public class ImageGridViewFragment extends Fragment {
     }
 
     private void handleFetchImages() {
-        URL url = buildImageURL();
-        try {
-            fetchImagesInBackground(url);
-        } catch(IOException ioException) {
-            Toast.makeText(getActivity(), R.string.failed_connection, Toast.LENGTH_LONG).show();
-        } catch(NoSuchAlgorithmException | KeyManagementException mixedException) {
-            Toast.makeText(getActivity(), R.string.connection_error, Toast.LENGTH_LONG)
-                    .show();
-        } catch(XmlPullParserException pullParserException) {
-            Toast.makeText(getActivity(), R.string.failed_to_retrieve_data,
-                    Toast.LENGTH_LONG).show();
+        LocationTracker locationTracker = new LocationTracker(getActivity());
+        LocationHolder locationHolder = locationTracker.getLocation();
+        String bbox = Double.toString(locationHolder.longitude - 0.2) + "," +
+                Double.toString(locationHolder.latitude - 0.2) + "," +
+                Double.toString(locationHolder.longitude + 0.2) + "," +
+                Double.toString(locationHolder.latitude + 0.2);
+        PhotoService photoService = ServiceFactory.getPhotoService();
+        Observable<FlickrImageSearch> observable = photoService.getFlickrImage(bbox, mPageNumber);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<FlickrImageSearch>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("This is where we are at: completed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("This is where we are at: onError: " + e.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onNext(FlickrImageSearch flickrImageSearch) {
+                        displayImages(flickrImageSearch);
+                    }
+                });
+    }
+
+    private void displayImages(FlickrImageSearch flickrImageSearch) {
+        if(mProgressBar != null) {
+            mProgressBar.setVisibility(View.GONE);
         }
-        System.out.print("H");
+
+        if(mImageGridView != null) {
+            mImageGridView.setVisibility(View.VISIBLE);
+        }
+
+        FlickrImageSearchBasicInfo flickrImageSearchBasicInfo = flickrImageSearch.getPhotos();
+            if(mPageNumber < flickrImageSearchBasicInfo.getPage() && mPageNumber <= flickrImageSearchBasicInfo.getPages()) {
+                mPageNumber++;
+            } else if(flickrImageSearchBasicInfo.getPages() == mPageNumber) {
+                Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
+                        .show();
+            }
+            mImageBaseViewAdapter.clearArray();
+            mImageBaseViewAdapter.addFlickrImages(flickrImageSearchBasicInfo.getPhoto());
+            mImageBaseViewAdapter.notifyDataSetChanged();
+
+        mFlickrImageSearch = flickrImageSearch;
+        mLoadMoreCalled = false;
     }
 
     private class SendBackTask extends AsyncTask<Void, Integer, Void> {
@@ -321,7 +247,6 @@ public class ImageGridViewFragment extends Fragment {
         if(mCallbacks == null) {
             Toast.makeText(getActivity(), R.string.refreshing_please_wait, Toast.LENGTH_LONG).show();
             mFlickrImages = new ArrayList<>();
-            mFlickrImageHolder = new FlickrImageHolder();
             mPageNumber = 1;
             mImageBaseViewAdapter.clearArray();
             mImageBaseViewAdapter.notifyDataSetChanged();

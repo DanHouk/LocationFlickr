@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +16,15 @@ import com.houkcorp.locationflickr.Constants;
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.model.FlickrImage;
 import com.houkcorp.locationflickr.model.ImageMetaData;
-import com.houkcorp.locationflickr.model.handler.FlickrMetaDataHandler;
+import com.houkcorp.locationflickr.service.MetaDataService;
+import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.houkcorp.locationflickr.util.NetworkUtilities;
-
-import org.xml.sax.SAXException;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.Locale;
 
 public class ImageDetailViewFragment extends Fragment {
     private Bitmap mBitmap;
@@ -83,7 +80,7 @@ public class ImageDetailViewFragment extends Fragment {
         userNameTextView = (TextView)view.findViewById(R.id.user_name_text_view_id);
 
         if(mImageMetaData != null) {
-            setViewData();
+            //setViewData();
         }
 
         return view;
@@ -103,7 +100,7 @@ public class ImageDetailViewFragment extends Fragment {
             protected Bitmap doInBackground(Void... params) {
                 Bitmap bitmap = null;
                 try {
-                    String stringURL = String.format(Constants.DEFAULT_IMAGE_URL,
+                    String stringURL = String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
                             flickrImage.getFarm(),
                             flickrImage.getServer(), flickrImage.getId(),
                             flickrImage.getSecret(), "z");
@@ -136,10 +133,10 @@ public class ImageDetailViewFragment extends Fragment {
     }
 
     private void getMetaData() {
-        new AsyncTask<Void, Void, ImageMetaData>() {
+        /*new AsyncTask<Void, Void, ImageMetaData>() {
             @Override
             protected ImageMetaData doInBackground(Void... params) {
-                ImageMetaData imageMetaData = null;
+                *//*ImageMetaData imageMetaData = null;
                 try {
                     String stringURL = String.format(Constants.META_DATA_URL, mFlickrImage.getId());
                     URL url = new URL(stringURL);
@@ -153,21 +150,23 @@ public class ImageDetailViewFragment extends Fragment {
                 } catch(IOException | SAXException | ParserConfigurationException ioException) {
                     Toast.makeText(getActivity(), R.string.thumbnail_failed,
                             Toast.LENGTH_LONG).show();
-                }
+                }*//*
 
-                return imageMetaData;
+                MetaDataService metaDataService = ServiceFactory.getMetaDataService();
+
+                return metaDataService.getMetaData(mFlickrImage.getId());
             }
 
             @Override
             protected void onPostExecute(ImageMetaData imageMetaData) {
                 super.onPostExecute(imageMetaData);
                 mImageMetaData = imageMetaData;
-                setViewData();
+                //setViewData();
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
     }
 
-    private void setViewData() {
+    /*private void setViewData() {
         if(!TextUtils.isEmpty(mImageMetaData.getTitle())) {
             imageTitleTextView.setText(mImageMetaData.getTitle());
         }
@@ -195,5 +194,5 @@ public class ImageDetailViewFragment extends Fragment {
         if(!TextUtils.isEmpty(mImageMetaData.getUserName())) {
             userNameTextView.setText(mImageMetaData.getUserName());
         }
-    }
+    }*/
 }

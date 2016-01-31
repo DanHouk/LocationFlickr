@@ -2,7 +2,7 @@ package com.houkcorp.locationflickr;
 
 public class Constants {
     //Default URL _t for thumbnail and _z for full image.
-    public static final String DEFAULT_IMAGE_URL = "https://farm%d.staticflickr.com/%d/%s_%s_%s.jpg";
+    public static final String DEFAULT_IMAGE_URL = "https://farm%d.staticflickr.com/%s/%s_%s_%s.jpg";
     public static final String FLICKR_IMAGE = "flickr_image";
     public static final String META_DATA_URL =
             "https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=535b54e75b084504069f7b66d8bfb7c7&photo_id=%s";

@@ -1,22 +1,24 @@
 package com.houkcorp.locationflickr.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.houkcorp.locationflickr.model.FlickrImage;
+import com.houkcorp.locationflickr.Constants;
+import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ImageBaseViewAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<FlickrImage> mFlickrImages;
+    private ArrayList<FlickrImageSearchPhoto> mFlickrImages;
 
-    public ImageBaseViewAdapter(Context context, ArrayList<FlickrImage> flickrImages) {
+    public ImageBaseViewAdapter(Context context, ArrayList<FlickrImageSearchPhoto> flickrImages) {
         mContext = context;
         mFlickrImages = flickrImages;
     }
@@ -27,7 +29,7 @@ public class ImageBaseViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public FlickrImage getItem(int position) {
+    public FlickrImageSearchPhoto getItem(int position) {
         return mFlickrImages.get(position);
     }
 
@@ -49,8 +51,7 @@ public class ImageBaseViewAdapter extends BaseAdapter {
             imageView = (ImageView)convertView;
         }
 
-        Bitmap bitmap = mFlickrImages.get(position).getBitmap();
-        imageView.setImageBitmap(bitmap);
+        handleFetchThumbnails(mFlickrImages.get(position), imageView);
 
         return imageView;
     }
@@ -59,7 +60,15 @@ public class ImageBaseViewAdapter extends BaseAdapter {
         mFlickrImages = new ArrayList<>();
     }
 
-    public void addFlickrImages(ArrayList<FlickrImage> flickrImages) {
+    public void addFlickrImages(ArrayList<FlickrImageSearchPhoto> flickrImages) {
         mFlickrImages = flickrImages;
+    }
+
+    public void handleFetchThumbnails(FlickrImageSearchPhoto flickrImageSearchPhoto, ImageView imageView) {
+        Picasso.with(mContext)
+                .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
+                        flickrImageSearchPhoto.getFarm(), flickrImageSearchPhoto.getServer(),
+                        flickrImageSearchPhoto.getId(), flickrImageSearchPhoto.getSecret(), "t"))
+                .into(imageView);
     }
 }

@@ -40,16 +40,14 @@ public class ImageGridActivity extends BaseActivity implements ImageGridViewFrag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.about_menu: {
-                String displayMessage =
-                        "Location Flickr\n\n An application to find Flickr images near you.\n\n";
-                displayMessage += "Version: ";
+                String displayMessage;
                 try {
                     int versionCode =
                             getBaseContext().getPackageManager().getPackageInfo(getBaseContext()
                                     .getPackageName(), 0).versionCode;
-                    displayMessage += versionCode;
+                    displayMessage = getString(R.string.about_location_flickr, versionCode);
                 } catch(PackageManager.NameNotFoundException nameNotFoundException) {
-                    displayMessage += "N/A";
+                    displayMessage = "N/A";
                 }
 
                 UIUtils.showDialogMessage(this, R.string.about, displayMessage);

@@ -3,17 +3,28 @@ package com.houkcorp.locationflickr.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+
 public class PhotosData implements Parcelable {
-    private int page;
-    private int pages;
-    private int perPage;
-    private int total;
+    @SerializedName("page") private int page;
+    @SerializedName("pages") private int pages;
+    @SerializedName("perpage") private int perPage;
+    @SerializedName("total") private int total;
+
+    @SerializedName("photo") private ArrayList<FlickrImage> photos;
+
+    public PhotosData() {
+        photos = new ArrayList<>();
+    }
 
     protected PhotosData(Parcel in) {
         page = in.readInt();
         pages = in.readInt();
         perPage = in.readInt();
         total = in.readInt();
+        photos = in.createTypedArrayList(FlickrImage.CREATOR);
     }
 
     public static final Creator<PhotosData> CREATOR = new Creator<PhotosData>() {
@@ -60,7 +71,16 @@ public class PhotosData implements Parcelable {
         return total;
     }
 
-    public PhotosData() {
+    public ArrayList<FlickrImage> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(ArrayList<FlickrImage> photos) {
+        this.photos = photos;
+    }
+
+    public void addPhoto(FlickrImage flickrImage) {
+        photos.add(flickrImage);
     }
 
     @Override
@@ -74,5 +94,6 @@ public class PhotosData implements Parcelable {
         dest.writeInt(pages);
         dest.writeInt(perPage);
         dest.writeInt(total);
+        dest.writeTypedList(photos);
     }
 }

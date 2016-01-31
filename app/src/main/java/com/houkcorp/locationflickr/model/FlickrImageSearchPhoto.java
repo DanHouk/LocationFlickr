@@ -9,9 +9,9 @@ public class FlickrImageSearchPhoto {
     @SerializedName("server") private String server;
     @SerializedName("farm") private int farm;
     @SerializedName("title") private String title;
-    @SerializedName("ispublic") private boolean isPublic;
-    @SerializedName("isfriend") private boolean isFriend;
-    @SerializedName("isFamily") private boolean isFamily;
+    @SerializedName("ispublic") private int isPublic;
+    @SerializedName("isfriend") private int isFriend;
+    @SerializedName("isFamily") private int isFamily;
 
     public String getId() {
         return id;
@@ -38,14 +38,14 @@ public class FlickrImageSearchPhoto {
     }
 
     public boolean isPublic() {
-        return isPublic;
+        return isPublic == 1;
     }
 
     public boolean isFriend() {
-        return isFriend;
+        return isFriend == 1;
     }
 
     public boolean isFamily() {
-        return isFamily;
+        return isFamily == 1;
     }
 }

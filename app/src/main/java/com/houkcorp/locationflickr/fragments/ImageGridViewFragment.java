@@ -100,7 +100,7 @@ public class ImageGridViewFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (mFlickrImageSearch != null && (firstVisibleItem + visibleItemCount) >=
+                if(mFlickrImageSearch != null && (firstVisibleItem + visibleItemCount) >=
                         mFlickrImageSearch.getPhotos().getPhoto().size() && !mLoadMoreCalled) {
                     mLoadMoreCalled = true;
                     handleFetchImages();
@@ -160,7 +160,7 @@ public class ImageGridViewFragment extends Fragment {
         Observable<FlickrImageSearch> observable = photoService.getFlickrImage(bbox, mPageNumber);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .unsubscribeOn(Schedulers.io())
+                .unsubscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<FlickrImageSearch>() {
                     @Override
                     public void onCompleted() {

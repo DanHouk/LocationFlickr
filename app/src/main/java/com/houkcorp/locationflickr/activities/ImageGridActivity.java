@@ -11,9 +11,8 @@ import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.fragments.ImageGridViewFragment;
 import com.houkcorp.locationflickr.util.UIUtils;
 
-public class ImageGridActivity extends BaseActivity implements ImageGridViewFragment.TaskCallbacks {
+public class ImageGridActivity extends BaseActivity {
     private static final String IMAGE_GRID_VIEW_FRAGMENT = "image_grid_view_fragment";
-    private ImageGridViewFragment mImageGridViewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,21 +76,5 @@ public class ImageGridActivity extends BaseActivity implements ImageGridViewFrag
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = ImageGridViewFragment.newInstance();
         fragmentManager.beginTransaction().add(R.id.image_grid_fragment_id, fragment, IMAGE_GRID_VIEW_FRAGMENT).commit();
-    }
-
-    @Override
-    public void onPreExecute() {
-    }
-
-    @Override
-    public void onProgressUpdate(int percent) {
-    }
-
-    @Override
-    public void onCancelled() {
-    }
-
-    @Override
-    public void onPostExecute() {
     }
 }

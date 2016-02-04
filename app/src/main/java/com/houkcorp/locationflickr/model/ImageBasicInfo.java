@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class FlickrImageSearchBasicInfo {
+public class ImageBasicInfo {
     @SerializedName("page") private int page;
     @SerializedName("pages") private int pages;
     @SerializedName("perpage") private int perPage;
     @SerializedName("total") private String total;
 
-    @SerializedName("photo") private ArrayList<FlickrImageSearchPhoto> photo;
+    @SerializedName("photo") private ArrayList<FlickrPhoto> photo;
 
     public int getPage() {
         return page;
@@ -28,7 +28,7 @@ public class FlickrImageSearchBasicInfo {
         return total;
     }
 
-    public ArrayList<FlickrImageSearchPhoto> getPhoto() {
+    public ArrayList<FlickrPhoto> getPhoto() {
         return photo;
     }
 }

@@ -8,10 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.houkcorp.locationflickr.R;
-import com.houkcorp.locationflickr.fragments.ImageGridViewFragment;
+import com.houkcorp.locationflickr.fragments.ImageListViewFragment;
 import com.houkcorp.locationflickr.util.UIUtils;
 
-public class ImageGridActivity extends BaseActivity {
+public class ImageListViewActivity extends BaseActivity {
     private static final String IMAGE_GRID_VIEW_FRAGMENT = "image_grid_view_fragment";
 
     @Override
@@ -55,11 +55,11 @@ public class ImageGridActivity extends BaseActivity {
             }
 
             case R.id.refresh_menu: {
-                ImageGridViewFragment imageGridViewFragment =
-                        (ImageGridViewFragment)getSupportFragmentManager()
+                ImageListViewFragment imageListViewFragment =
+                        (ImageListViewFragment)getSupportFragmentManager()
                                 .findFragmentByTag(IMAGE_GRID_VIEW_FRAGMENT);
-                if(imageGridViewFragment != null) {
-                    imageGridViewFragment.clearListAndReQuery();
+                if(imageListViewFragment != null) {
+                    imageListViewFragment.clearListAndReQuery();
                 }
 
                 break;
@@ -74,7 +74,7 @@ public class ImageGridActivity extends BaseActivity {
      */
     private void addFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = ImageGridViewFragment.newInstance();
+        Fragment fragment = ImageListViewFragment.newInstance();
         fragmentManager.beginTransaction().add(R.id.image_grid_fragment_id, fragment, IMAGE_GRID_VIEW_FRAGMENT).commit();
     }
 }

@@ -2,12 +2,12 @@ package com.houkcorp.locationflickr.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FlickrImageSearch {
-    @SerializedName("photos") private FlickrImageSearchBasicInfo photos;
+public class ImageMetaDataResults {
+    @SerializedName("photo") private PhotoMetaData photo;
     @SerializedName("stat") private String stat;
 
-    public FlickrImageSearchBasicInfo getPhotos() {
-        return photos;
+    public PhotoMetaData getPhoto() {
+        return photo;
     }
 
     public String getStat() {

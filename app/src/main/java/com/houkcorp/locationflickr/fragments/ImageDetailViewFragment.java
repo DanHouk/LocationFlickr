@@ -12,8 +12,8 @@ import android.widget.TextView;
 import com.houkcorp.locationflickr.Constants;
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.activities.ImageDetailActivity;
-import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
-import com.houkcorp.locationflickr.model.ImageMetaData;
+import com.houkcorp.locationflickr.model.FlickrPhoto;
+import com.houkcorp.locationflickr.model.ImageMetaDataResults;
 import com.houkcorp.locationflickr.service.MetaDataService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.squareup.picasso.Picasso;
@@ -27,10 +27,10 @@ import rx.schedulers.Schedulers;
 
 public class ImageDetailViewFragment extends Fragment {
     private Bitmap mBitmap;
-    private FlickrImageSearchPhoto mFlickrImageSearchPhoto;
-    private ImageView mImageView;
-    private ImageMetaData mImageMetaData;
+    private FlickrPhoto mFlickrPhoto;
+    private ImageMetaDataResults mImageMetaDataResults;
 
+    private ImageView mImageView;
     private TextView imageTitleTextView;
     private TextView originalSecretTextView;
     private TextView postedDateTextView;
@@ -39,10 +39,10 @@ public class ImageDetailViewFragment extends Fragment {
     private TextView takenDateTextView;
     private TextView userNameTextView;
 
-    public static ImageDetailViewFragment newInstance(FlickrImageSearchPhoto flickrImageSearchPhoto) {
+    public static ImageDetailViewFragment newInstance(FlickrPhoto flickrPhoto) {
         ImageDetailViewFragment imageDetailViewFragment = new ImageDetailViewFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO, flickrImageSearchPhoto);
+        args.putParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO, flickrPhoto);
         imageDetailViewFragment.setArguments(args);
         return imageDetailViewFragment;
     }
@@ -58,16 +58,16 @@ public class ImageDetailViewFragment extends Fragment {
                 getImageInBackground(mFlickrImage);
                 getMetaData();
             }*//*
-            mFlickrImageSearchPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);
+            mFlickrPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);
             Picasso.with(getContext())
                     .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
-                            mFlickrImageSearchPhoto.getFarm(), mFlickrImageSearchPhoto.getServer(),
-                            mFlickrImageSearchPhoto.getId(), mFlickrImageSearchPhoto.getSecret(), "t"))
+                            mFlickrPhoto.getFarm(), mFlickrPhoto.getServer(),
+                            mFlickrPhoto.getId(), mFlickrPhoto.getSecret(), "t"))
                     .into(mImageView);
         } else if(savedInstanceState != null) {
             *//*mFlickrImage = savedInstanceState.getParcelable(Constants.FLICKR_IMAGE);
             mBitmap = savedInstanceState.getParcelable("bitmap");
-            mImageMetaData = savedInstanceState.getParcelable("image_meta_data");*//*
+            mImageMetaDataResults = savedInstanceState.getParcelable("image_meta_data");*//*
         }*/
     }
 
@@ -91,11 +91,11 @@ public class ImageDetailViewFragment extends Fragment {
 
         Bundle extras = getActivity().getIntent().getExtras();
         if(extras != null) {
-            mFlickrImageSearchPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);
+            mFlickrPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);
             Picasso.with(getContext())
                     .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
-                            mFlickrImageSearchPhoto.getFarm(), mFlickrImageSearchPhoto.getServer(),
-                            mFlickrImageSearchPhoto.getId(), mFlickrImageSearchPhoto.getSecret(), "z"))
+                            mFlickrPhoto.getFarm(), mFlickrPhoto.getServer(),
+                            mFlickrPhoto.getId(), mFlickrPhoto.getSecret(), "z"))
                     .into(mImageView);
 
             getMetaData();
@@ -114,24 +114,24 @@ public class ImageDetailViewFragment extends Fragment {
 
     private void getMetaData() {
         MetaDataService metaDataService = ServiceFactory.getMetaDataService();
-        Observable<ImageMetaData> observable = metaDataService.getMetaData(mFlickrImageSearchPhoto.getId());
+        Observable<ImageMetaDataResults> observable = metaDataService.getMetaData(mFlickrPhoto.getId());
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ImageMetaData>() {
+                .subscribe(new Subscriber<ImageMetaDataResults>() {
                     @Override
                     public void onCompleted() {
-
+                        System.out.println("This is where we are at: onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        System.out.println("This is where we are at: onError: " + e.getLocalizedMessage());
                     }
 
                     @Override
-                    public void onNext(ImageMetaData imageMetaData) {
-
+                    public void onNext(ImageMetaDataResults imageMetaDataResults) {
+                        System.out.println("This is where we are at: onNext");
                     }
                 });
         /*new AsyncTask<Void, Void, Bitmap>() {
@@ -172,10 +172,10 @@ public class ImageDetailViewFragment extends Fragment {
     }
 
     //private void getMetaData() {
-        /*new AsyncTask<Void, Void, ImageMetaData>() {
+        /*new AsyncTask<Void, Void, ImageMetaDataResults>() {
             @Override
-            protected ImageMetaData doInBackground(Void... params) {
-                *//*ImageMetaData imageMetaData = null;
+            protected ImageMetaDataResults doInBackground(Void... params) {
+                *//*ImageMetaDataResults imageMetaData = null;
                 try {
                     String stringURL = String.format(Constants.META_DATA_URL, mFlickrImage.getId());
                     URL url = new URL(stringURL);
@@ -197,41 +197,41 @@ public class ImageDetailViewFragment extends Fragment {
             }
 
             @Override
-            protected void onPostExecute(ImageMetaData imageMetaData) {
+            protected void onPostExecute(ImageMetaDataResults imageMetaData) {
                 super.onPostExecute(imageMetaData);
-                mImageMetaData = imageMetaData;
+                mImageMetaDataResults = imageMetaData;
                 //setViewData();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
     //}
 
     /*private void setViewData() {
-        if(!TextUtils.isEmpty(mImageMetaData.getTitle())) {
-            imageTitleTextView.setText(mImageMetaData.getTitle());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getTitle())) {
+            imageTitleTextView.setText(mImageMetaDataResults.getTitle());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getOriginalSecret())) {
-            originalSecretTextView.setText(mImageMetaData.getOriginalSecret());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getOriginalSecret())) {
+            originalSecretTextView.setText(mImageMetaDataResults.getOriginalSecret());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getPostedDateString())) {
-            postedDateTextView.setText(mImageMetaData.getPostedDateString());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getPostedDateString())) {
+            postedDateTextView.setText(mImageMetaDataResults.getPostedDateString());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getRealName())) {
-            realNameTextView.setText(mImageMetaData.getRealName());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getRealName())) {
+            realNameTextView.setText(mImageMetaDataResults.getRealName());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getSecret())) {
-            secretTextView.setText(mImageMetaData.getSecret());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getSecret())) {
+            secretTextView.setText(mImageMetaDataResults.getSecret());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getTakenDate())) {
-            takenDateTextView.setText(mImageMetaData.getTakenDate());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getTakenDate())) {
+            takenDateTextView.setText(mImageMetaDataResults.getTakenDate());
         }
 
-        if(!TextUtils.isEmpty(mImageMetaData.getUserName())) {
-            userNameTextView.setText(mImageMetaData.getUserName());
+        if(!TextUtils.isEmpty(mImageMetaDataResults.getUserName())) {
+            userNameTextView.setText(mImageMetaDataResults.getUserName());
         }
     }*/
 }

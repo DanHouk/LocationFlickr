@@ -15,9 +15,9 @@ import android.widget.Toast;
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.activities.ImageDetailActivity;
 import com.houkcorp.locationflickr.adapters.ImageBaseViewAdapter;
-import com.houkcorp.locationflickr.model.FlickrImageSearch;
-import com.houkcorp.locationflickr.model.FlickrImageSearchBasicInfo;
-import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
+import com.houkcorp.locationflickr.model.FlickrImageSearchResults;
+import com.houkcorp.locationflickr.model.ImageBasicInfo;
+import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.houkcorp.locationflickr.model.LocationHolder;
 import com.houkcorp.locationflickr.service.PhotoService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
@@ -30,18 +30,18 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ImageGridViewFragment extends Fragment {
+public class ImageListViewFragment extends Fragment {
     private GridView mImageGridView;
     private ProgressBar mProgressBar;
 
-    public static ImageGridViewFragment newInstance() {
-        return new ImageGridViewFragment();
+    public static ImageListViewFragment newInstance() {
+        return new ImageListViewFragment();
     }
 
-    private ArrayList<FlickrImageSearchPhoto> mFlickrImages;
+    private ArrayList<FlickrPhoto> mFlickrImages;
     private ImageBaseViewAdapter mImageBaseViewAdapter;
     private int mPageNumber = 1;
-    private FlickrImageSearch mFlickrImageSearch;
+    private FlickrImageSearchResults mFlickrImageSearchResults;
     private boolean mLoadMoreCalled = false;
 
     @Override
@@ -81,8 +81,8 @@ public class ImageGridViewFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(mFlickrImageSearch != null && (firstVisibleItem + visibleItemCount) >=
-                        mFlickrImageSearch.getPhotos().getPhoto().size() && !mLoadMoreCalled) {
+                if(mFlickrImageSearchResults != null && (firstVisibleItem + visibleItemCount) >=
+                        mFlickrImageSearchResults.getPhotos().getPhoto().size() && !mLoadMoreCalled) {
                     mLoadMoreCalled = true;
                     handleFetchImages();
                 }
@@ -92,7 +92,7 @@ public class ImageGridViewFragment extends Fragment {
         mImageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FlickrImageSearchPhoto selectedImage = mFlickrImageSearch.getPhotos().getPhoto().get(position);
+                FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
                 if (selectedImage != null) {
                    Intent detailIntent = ImageDetailActivity.newIntent(getContext(), selectedImage);
 
@@ -123,11 +123,11 @@ public class ImageGridViewFragment extends Fragment {
                 Double.toString(locationHolder.longitude + 0.2) + "," +
                 Double.toString(locationHolder.latitude + 0.2);
         PhotoService photoService = ServiceFactory.getPhotoService();
-        Observable<FlickrImageSearch> observable = photoService.getFlickrImage(bbox, mPageNumber);
+        Observable<FlickrImageSearchResults> observable = photoService.getFlickrImage(bbox, mPageNumber);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<FlickrImageSearch>() {
+                .subscribe(new Subscriber<FlickrImageSearchResults>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -137,13 +137,13 @@ public class ImageGridViewFragment extends Fragment {
                     }
 
                     @Override
-                    public void onNext(FlickrImageSearch flickrImageSearch) {
-                        displayImages(flickrImageSearch);
+                    public void onNext(FlickrImageSearchResults flickrImageSearchResults) {
+                        displayImages(flickrImageSearchResults);
                     }
                 });
     }
 
-    private void displayImages(FlickrImageSearch flickrImageSearch) {
+    private void displayImages(FlickrImageSearchResults flickrImageSearchResults) {
         if(mProgressBar != null) {
             mProgressBar.setVisibility(View.GONE);
         }
@@ -152,18 +152,18 @@ public class ImageGridViewFragment extends Fragment {
             mImageGridView.setVisibility(View.VISIBLE);
         }
 
-        FlickrImageSearchBasicInfo flickrImageSearchBasicInfo = flickrImageSearch.getPhotos();
-            if(mPageNumber < flickrImageSearchBasicInfo.getPage() && mPageNumber <= flickrImageSearchBasicInfo.getPages()) {
+        ImageBasicInfo imageBasicInfo = flickrImageSearchResults.getPhotos();
+            if(mPageNumber < imageBasicInfo.getPage() && mPageNumber <= imageBasicInfo.getPages()) {
                 mPageNumber++;
-            } else if(flickrImageSearchBasicInfo.getPages() == mPageNumber) {
+            } else if(imageBasicInfo.getPages() == mPageNumber) {
                 Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
                         .show();
             }
             mImageBaseViewAdapter.clearArray();
-            mImageBaseViewAdapter.addFlickrImages(flickrImageSearchBasicInfo.getPhoto());
+            mImageBaseViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());
             mImageBaseViewAdapter.notifyDataSetChanged();
 
-        mFlickrImageSearch = flickrImageSearch;
+        mFlickrImageSearchResults = flickrImageSearchResults;
         mLoadMoreCalled = false;
     }
 

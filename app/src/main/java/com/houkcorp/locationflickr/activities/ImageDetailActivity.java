@@ -5,24 +5,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.BaseAdapter;
 
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.fragments.ImageDetailViewFragment;
-import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
+import com.houkcorp.locationflickr.model.FlickrPhoto;
 
 public class ImageDetailActivity extends BaseActivity {
     public static final String IMAGE_DETAIL_FRAGMENT = "image_detail_fragment";
     public static final String EXTRA_FLICKR_PHOTO = "flickr_photo";
 
-    private FlickrImageSearchPhoto mFlickrImageSearchPhoto;
+    private FlickrPhoto mFlickrPhoto;
 
-    public static Intent newIntent(Context context, FlickrImageSearchPhoto flickrImageSearchPhoto) {
+    public static Intent newIntent(Context context, FlickrPhoto flickrPhoto) {
         Intent intent = new Intent(context, ImageDetailActivity.class);
-        intent.putExtra(EXTRA_FLICKR_PHOTO, flickrImageSearchPhoto);
+        intent.putExtra(EXTRA_FLICKR_PHOTO, flickrPhoto);
 
         return intent;
     }
@@ -31,7 +29,7 @@ public class ImageDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFlickrImageSearchPhoto = getIntent().getParcelableExtra(EXTRA_FLICKR_PHOTO);
+        mFlickrPhoto = getIntent().getParcelableExtra(EXTRA_FLICKR_PHOTO);
 
         if(savedInstanceState == null) {
             addFragment();
@@ -60,7 +58,7 @@ public class ImageDetailActivity extends BaseActivity {
      */
     private void addFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = ImageDetailViewFragment.newInstance(mFlickrImageSearchPhoto);
+        Fragment fragment = ImageDetailViewFragment.newInstance(mFlickrPhoto);
         fragmentManager.beginTransaction().replace(R.id.image_detail_fragment_id, fragment, IMAGE_DETAIL_FRAGMENT).commit();
     }
 }

@@ -116,6 +116,14 @@ public class ImageListViewFragment extends Fragment {
     }
 
     private void handleFetchImages() {
+        if(mProgressBar != null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        if(mImageGridView != null) {
+            mImageGridView.setVisibility(View.GONE);
+        }
+
         LocationTracker locationTracker = new LocationTracker(getActivity());
         LocationHolder locationHolder = locationTracker.getLocation();
         String bbox = Double.toString(locationHolder.longitude - 0.2) + "," +

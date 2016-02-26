@@ -121,7 +121,6 @@ public class ImageDetailViewFragment extends Fragment {
                 .subscribe(new Subscriber<ImageMetaDataResults>() {
                     @Override
                     public void onCompleted() {
-                        System.out.println("This is where we are at: onCompleted");
                     }
 
                     @Override
@@ -131,7 +130,7 @@ public class ImageDetailViewFragment extends Fragment {
 
                     @Override
                     public void onNext(ImageMetaDataResults imageMetaDataResults) {
-                        System.out.println("This is where we are at: onNext");
+                        displayMetaData(imageMetaDataResults);
                     }
                 });
         /*new AsyncTask<Void, Void, Bitmap>() {
@@ -169,6 +168,10 @@ public class ImageDetailViewFragment extends Fragment {
                 mImageView.invalidate();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+    }
+
+    private void displayMetaData(ImageMetaDataResults imageMetaDataResults) {
+
     }
 
     //private void getMetaData() {

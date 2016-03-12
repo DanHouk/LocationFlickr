@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FlickrImageSearchPhoto implements Parcelable {
+public class FlickrPhoto implements Parcelable {
     @SerializedName("id") private String id;
     @SerializedName("owner") private String owner;
     @SerializedName("secret") private String secret;
@@ -16,7 +16,7 @@ public class FlickrImageSearchPhoto implements Parcelable {
     @SerializedName("isfriend") private int isFriend;
     @SerializedName("isFamily") private int isFamily;
 
-    protected FlickrImageSearchPhoto(Parcel in) {
+    protected FlickrPhoto(Parcel in) {
         id = in.readString();
         owner = in.readString();
         secret = in.readString();
@@ -28,15 +28,15 @@ public class FlickrImageSearchPhoto implements Parcelable {
         isFamily = in.readInt();
     }
 
-    public static final Creator<FlickrImageSearchPhoto> CREATOR = new Creator<FlickrImageSearchPhoto>() {
+    public static final Creator<FlickrPhoto> CREATOR = new Creator<FlickrPhoto>() {
         @Override
-        public FlickrImageSearchPhoto createFromParcel(Parcel in) {
-            return new FlickrImageSearchPhoto(in);
+        public FlickrPhoto createFromParcel(Parcel in) {
+            return new FlickrPhoto(in);
         }
 
         @Override
-        public FlickrImageSearchPhoto[] newArray(int size) {
-            return new FlickrImageSearchPhoto[size];
+        public FlickrPhoto[] newArray(int size) {
+            return new FlickrPhoto[size];
         }
     };
 

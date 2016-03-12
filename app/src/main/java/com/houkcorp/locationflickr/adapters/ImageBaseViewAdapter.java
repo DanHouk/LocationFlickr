@@ -8,7 +8,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.houkcorp.locationflickr.Constants;
-import com.houkcorp.locationflickr.model.FlickrImageSearchPhoto;
+import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -16,9 +16,9 @@ import java.util.Locale;
 
 public class ImageBaseViewAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<FlickrImageSearchPhoto> mFlickrImages;
+    private ArrayList<FlickrPhoto> mFlickrImages;
 
-    public ImageBaseViewAdapter(Context context, ArrayList<FlickrImageSearchPhoto> flickrImages) {
+    public ImageBaseViewAdapter(Context context, ArrayList<FlickrPhoto> flickrImages) {
         mContext = context;
         mFlickrImages = flickrImages;
     }
@@ -29,7 +29,7 @@ public class ImageBaseViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public FlickrImageSearchPhoto getItem(int position) {
+    public FlickrPhoto getItem(int position) {
         return mFlickrImages.get(position);
     }
 
@@ -60,15 +60,15 @@ public class ImageBaseViewAdapter extends BaseAdapter {
         mFlickrImages = new ArrayList<>();
     }
 
-    public void addFlickrImages(ArrayList<FlickrImageSearchPhoto> flickrImages) {
+    public void addFlickrImages(ArrayList<FlickrPhoto> flickrImages) {
         mFlickrImages = flickrImages;
     }
 
-    public void handleFetchThumbnails(FlickrImageSearchPhoto flickrImageSearchPhoto, ImageView imageView) {
+    public void handleFetchThumbnails(FlickrPhoto flickrPhoto, ImageView imageView) {
         Picasso.with(mContext)
                 .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
-                        flickrImageSearchPhoto.getFarm(), flickrImageSearchPhoto.getServer(),
-                        flickrImageSearchPhoto.getId(), flickrImageSearchPhoto.getSecret(), "t"))
+                        flickrPhoto.getFarm(), flickrPhoto.getServer(),
+                        flickrPhoto.getId(), flickrPhoto.getSecret(), "t"))
                 .into(imageView);
     }
 }

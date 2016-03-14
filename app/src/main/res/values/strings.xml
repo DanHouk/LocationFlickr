@@ -6,6 +6,8 @@
 
     <string name="connection_error">Server connection failed</string>
 
+    <string name="description">Description:</string>
+
     <string name="failed_connection">Connection failed.</string>
     <string name="failed_to_retrieve_data">Image retrieval failure.</string>
     <string name="full_image">Full Image</string>
@@ -15,6 +17,7 @@
     <string name="hello_world">Hello world!</string>
 
     <string name="last_page">No more pages to load.</string>
+    <string name="location">Location:</string>
     <string name="location_error">Location error!</string>
 
     <string name="no_connection">No connection.</string>
@@ -26,7 +29,6 @@
 
     <string name="posted_date_header">Posted:</string>
 
-    <string name="real_name_header">Real name:</string>
     <string name="refresh_page">Refresh</string>
     <string name="refreshing_please_wait">ReSyncing data.  Please wait.</string>
 
@@ -39,4 +41,6 @@
 
     <string name="url_creation_failed">Invalid URL</string>
     <string name="users_name_header">User name:</string>
+
+    <string name="view_count">Views:</string>
 </resources>

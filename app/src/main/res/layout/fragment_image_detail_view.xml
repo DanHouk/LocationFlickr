@@ -1,173 +1,193 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="?android:attr/actionBarSize">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="?android:attr/actionBarSize">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/image_title_text_view_id"
+        <LinearLayout
+            android:id="@+id/image_detail_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:text="@string/not_available"
-            android:textSize="25sp"
-            android:textStyle="bold"/>
-
-        <ImageView
-            android:id="@+id/image_detail_image_view_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/full_image"
-            android:scaleType="fitCenter"/>
-
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="25dp"
-            android:paddingBottom="10sp"
-            android:stretchColumns="0,1">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/users_name_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
-
-                <TextView
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/real_name_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/user_name_text_view_id"
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
-
-                <TextView
-                    android:id="@+id/real_name_text_view_id"
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
-            </TableRow>
+            android:orientation="vertical"
+            android:paddingTop="15dp"
+            android:visibility="gone">
 
             <TextView
+                android:id="@+id/image_title_text_view_id"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"/>
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
-            <TableRow
+            <ImageView
+                android:id="@+id/image_detail_image_view_id"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/full_image"
+                android:scaleType="fitCenter" />
 
-                <TextView
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/taken_date_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
-
-                <TextView
-                    android:layout_width="0sp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/posted_date_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
-            </TableRow>
-
-            <TableRow
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="25dp"
+                android:paddingBottom="10sp">
 
-                <TextView
-                    android:id="@+id/taken_date_text_view_id"
-                    android:layout_width="0sp"
+                <LinearLayout
+                    android:id="@+id/views_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
 
-                <TextView
-                    android:id="@+id/posted_date_text_view_id"
-                    android:layout_width="0sp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/view_count"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/view_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/user_name_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
-            </TableRow>
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/users_name_header"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/user_name_text_view_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="0sp"
+                <LinearLayout
+                    android:id="@+id/location_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/secret_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
 
-                <TextView
-                    android:layout_width="0sp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/location"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/location_text_view_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/description_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/original_secret_header"
-                    android:textSize="20sp"
-                    android:textStyle="italic"/>
-            </TableRow>
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/description"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
 
-                <TextView
-                    android:id="@+id/secret_text_view_id"
-                    android:layout_width="0sp"
+                    <TextView
+                        android:id="@+id/description_text_view_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/taken_date_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
 
-                <TextView
-                    android:id="@+id/original_secret_text_view_id"
-                    android:layout_width="0sp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/taken_date_header"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/taken_date_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/posted_date_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/not_available"
-                    android:textSize="18sp"/>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/posted_date_header"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/posted_date_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--<ProgressBar
+            android:id="@+id/image_detail_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible" />-->
+    </RelativeLayout>
 </ScrollView>

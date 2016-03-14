@@ -158,6 +158,10 @@ public class PhotoMetaData {
 
     public class DataDescription {
         @SerializedName("_content") private String content;
+
+        public String getContent() {
+            return content;
+        }
     }
 
     public class DataVisibility {

@@ -3,10 +3,14 @@ package com.houkcorp.locationflickr.fragments;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.houkcorp.locationflickr.Constants;
@@ -14,10 +18,13 @@ import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.activities.ImageDetailActivity;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.houkcorp.locationflickr.model.ImageMetaDataResults;
+import com.houkcorp.locationflickr.model.PhotoMetaData;
 import com.houkcorp.locationflickr.service.MetaDataService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import rx.Observable;
@@ -28,16 +35,23 @@ import rx.schedulers.Schedulers;
 public class ImageDetailViewFragment extends Fragment {
     private Bitmap mBitmap;
     private FlickrPhoto mFlickrPhoto;
-    private ImageMetaDataResults mImageMetaDataResults;
 
     private ImageView mImageView;
-    private TextView imageTitleTextView;
-    private TextView originalSecretTextView;
-    private TextView postedDateTextView;
-    private TextView realNameTextView;
-    private TextView secretTextView;
-    private TextView takenDateTextView;
-    private TextView userNameTextView;
+    private TextView mImageTitleTextView;
+    private TextView mPostedDateTextView;
+    private TextView mLocationTextView;
+    private TextView mTakenDateTextView;
+    private TextView mUserNameTextView;
+    private LinearLayout mUserNameLayout;
+    private LinearLayout mLocationLayout;
+    private LinearLayout mViewsLayout;
+    private TextView mViewCountTextView;
+    private LinearLayout mDescriptionLayout;
+    private TextView mDescriptionTextView;
+    private LinearLayout mTakenDateLayout;
+    private LinearLayout mPostedDateLayout;
+    private LinearLayout mImageDetailLayout;
+    private ProgressBar mImageDetailProgressBar;
 
     public static ImageDetailViewFragment newInstance(FlickrPhoto flickrPhoto) {
         ImageDetailViewFragment imageDetailViewFragment = new ImageDetailViewFragment();
@@ -81,13 +95,24 @@ public class ImageDetailViewFragment extends Fragment {
             mImageView.setImageBitmap(mBitmap);
         }
 
-        imageTitleTextView = (TextView)view.findViewById(R.id.image_title_text_view_id);
-        originalSecretTextView = (TextView)view.findViewById(R.id.original_secret_text_view_id);
-        postedDateTextView = (TextView)view.findViewById(R.id.posted_date_text_view_id);
-        realNameTextView = (TextView)view.findViewById(R.id.real_name_text_view_id);
-        secretTextView = (TextView)view.findViewById(R.id.secret_text_view_id);
-        takenDateTextView = (TextView)view.findViewById(R.id.taken_date_text_view_id);
-        userNameTextView = (TextView)view.findViewById(R.id.user_name_text_view_id);
+        /*mImageDetailProgressBar = (ProgressBar)view.findViewById(R.id.image_grid_progressbar);*/
+
+        mImageDetailLayout = (LinearLayout)view.findViewById(R.id.image_detail_layout);
+        mUserNameLayout = (LinearLayout)view.findViewById(R.id.user_name_layout);
+        mLocationLayout = (LinearLayout)view.findViewById(R.id.location_layout);
+        mViewsLayout = (LinearLayout)view.findViewById(R.id.views_layout);
+        mDescriptionLayout = (LinearLayout)view.findViewById(R.id.description_layout);
+        mTakenDateLayout = (LinearLayout)view.findViewById(R.id.taken_date_layout);
+        mPostedDateLayout = (LinearLayout)view.findViewById(R.id.posted_date_layout);
+
+        mImageTitleTextView = (TextView)view.findViewById(R.id.image_title_text_view_id);
+        mViewCountTextView = (TextView)view.findViewById(R.id.view_count_text_view);
+        mUserNameTextView = (TextView)view.findViewById(R.id.user_name_text_view_id);
+        mLocationTextView = (TextView)view.findViewById(R.id.location_text_view_id);
+        mDescriptionTextView = (TextView)view.findViewById(R.id.description_text_view_id);
+        mPostedDateTextView = (TextView)view.findViewById(R.id.posted_date_text_view);
+        mTakenDateTextView = (TextView)view.findViewById(R.id.taken_date_text_view);
+
 
         Bundle extras = getActivity().getIntent().getExtras();
         if(extras != null) {
@@ -133,45 +158,72 @@ public class ImageDetailViewFragment extends Fragment {
                         displayMetaData(imageMetaDataResults);
                     }
                 });
-        /*new AsyncTask<Void, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                Bitmap bitmap = null;
-                try {
-                    String stringURL = String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
-                            flickrImage.getFarm(),
-                            flickrImage.getServer(), flickrImage.getId(),
-                            flickrImage.getSecret(), "z");
-                    URL url = new URL(stringURL);
-
-                    InputStream inputStream = NetworkUtilities.handleHttpGet(url);
-                    if(inputStream != null) {
-                        BufferedInputStream bufferedInputStream =
-                                new BufferedInputStream(inputStream);
-                        bitmap = BitmapFactory.decodeStream(bufferedInputStream);
-                        bufferedInputStream.close();
-                        inputStream.close();
-                    }
-                } catch(IOException ioException) {
-                    Toast.makeText(getActivity(), R.string.thumbnail_failed,
-                            Toast.LENGTH_LONG).show();
-                }
-
-                return bitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                super.onPostExecute(bitmap);
-                mBitmap = bitmap;
-                mImageView.setImageBitmap(bitmap);
-                mImageView.invalidate();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
-    }
+        }
 
     private void displayMetaData(ImageMetaDataResults imageMetaDataResults) {
+        PhotoMetaData photoData = imageMetaDataResults.getPhoto();
+        if (photoData.getTitle() != null && !TextUtils.isEmpty(photoData.getTitle().getContent())) {
+            mImageTitleTextView.setText(photoData.getTitle().getContent());
+        } else {
+            mImageTitleTextView.setText("N/A");
+        }
 
+        if (!TextUtils.isEmpty(photoData.getViews())) {
+            mViewCountTextView.setText(photoData.getViews());
+            mViewsLayout.setVisibility(View.VISIBLE);
+        } else {
+            mViewCountTextView.setText("");
+            mViewsLayout.setVisibility(View.GONE);
+        }
+
+        if (photoData.getOwner() != null && !TextUtils.isEmpty(photoData.getOwner().getUserName())) {
+            mUserNameTextView.setText(photoData.getOwner().getUserName());
+            mUserNameLayout.setVisibility(View.VISIBLE);
+        } else {
+            mUserNameTextView.setText("");
+            mUserNameLayout.setVisibility(View.GONE);
+        }
+
+        if (photoData.getOwner() != null && !TextUtils.isEmpty(photoData.getOwner().getLocation())) {
+            mLocationTextView.setText(photoData.getOwner().getLocation());
+            mLocationLayout.setVisibility(View.VISIBLE);
+        } else {
+            mLocationTextView.setText("");
+            mLocationLayout.setVisibility(View.GONE);
+        }
+
+        if (photoData.getDescription() != null && !TextUtils.isEmpty(photoData.getDescription().getContent())) {
+            mDescriptionTextView.setText(photoData.getDescription().getContent());
+            mDescriptionLayout.setVisibility(View.VISIBLE);
+        } else {
+            mDescriptionTextView.setText("");
+            mDescriptionLayout.setVisibility(View.GONE);
+        }
+
+        if (photoData.getDates() != null && !TextUtils.isEmpty(photoData.getDates().getPosted())) {
+            //Convert to date and change names of the fields.
+            Date newDate = new Date(Integer.parseInt(photoData.getDates().getPosted()));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+            mPostedDateTextView.setText(dateFormat.format(newDate));
+            mPostedDateLayout.setVisibility(View.VISIBLE);
+        } else {
+            mPostedDateTextView.setText("");
+            mPostedDateLayout.setVisibility(View.GONE);
+        }
+
+        if (photoData.getDates() != null && photoData.getDates().getTaken() != null) {
+            //Format this date and change names of the fields.
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
+            mTakenDateTextView.setText(dateFormat.format(photoData.getDates().getTaken()));
+            mTakenDateLayout.setVisibility(View.VISIBLE);
+        } else {
+            mTakenDateTextView.setText("");
+            mTakenDateLayout.setVisibility(View.GONE);
+        }
+
+        /*mImageDetailProgressBar.setVisibility(View.GONE);*/
+        mImageDetailLayout.setVisibility(View.VISIBLE);
+        //getComments() content, List getTags()
     }
 
     //private void getMetaData() {

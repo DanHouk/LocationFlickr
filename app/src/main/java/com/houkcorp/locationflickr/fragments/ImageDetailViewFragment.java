@@ -113,7 +113,6 @@ public class ImageDetailViewFragment extends Fragment {
         mPostedDateTextView = (TextView)view.findViewById(R.id.posted_date_text_view);
         mTakenDateTextView = (TextView)view.findViewById(R.id.taken_date_text_view);
 
-
         Bundle extras = getActivity().getIntent().getExtras();
         if(extras != null) {
             mFlickrPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);

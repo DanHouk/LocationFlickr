@@ -1,31 +1,40 @@
 package com.houkcorp.locationflickr.util;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.houkcorp.locationflickr.Constants;
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.model.LocationHolder;
 
 public class LocationTracker implements LocationListener {
-    private Context mContext;
+    private Activity mContext;
+    private Location mLocation;
+    private LocationHolder mLocationHolder;
+    private LocationManager mLocationManager;
 
-    public LocationTracker(Context context) {
+    public LocationTracker(Activity context) {
         mContext = context;
     }
 
+
+
     public LocationHolder getLocation() {
-        Location location;
-        LocationHolder locationHolder = new LocationHolder();
-        LocationManager locationManager =
+        mLocationHolder = new LocationHolder();
+        mLocationManager =
                 (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
-        boolean gpsEnabeled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean networkEnabeled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean gpsEnabeled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean networkEnabeled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if(!gpsEnabeled && !networkEnabeled) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext)
@@ -46,28 +55,48 @@ public class LocationTracker implements LocationListener {
         }
 
         if(gpsEnabeled) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    Constants.SERVER_TIME_OUT, 10, this);
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location != null) {
-                locationHolder.location = location;
-                locationHolder.latitude = location.getLatitude();
-                locationHolder.longitude = location.getLongitude();
+            int temp = 0;
+
+            //int fineCheckInt =
+            int coarseCheckInt = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+            int fineCheckInt = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);
+
+            if (coarseCheckInt != PackageManager.PERMISSION_GRANTED || fineCheckInt != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(mContext, new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
+                callLocation();
+            } else {
+                callLocation();
             }
         }
 
         if(networkEnabeled && !gpsEnabeled) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                     Constants.SERVER_TIME_OUT, 10, this);
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location != null) {
-                locationHolder.location = location;
-                locationHolder.latitude = location.getLatitude();
-                locationHolder.longitude = location.getLongitude();
+            mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(mLocation != null) {
+                mLocationHolder.location = mLocation;
+                mLocationHolder.latitude = mLocation.getLatitude();
+                mLocationHolder.longitude = mLocation.getLongitude();
             }
         }
 
-        return locationHolder;
+        return mLocationHolder;
+    }
+
+    public void callLocation() {
+        int coarseCheckInt = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        int fineCheckInt = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (fineCheckInt == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    Constants.SERVER_TIME_OUT, 10, this);
+            mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(mLocation != null) {
+                mLocationHolder.location = mLocation;
+                mLocationHolder.latitude = mLocation.getLatitude();
+                mLocationHolder.longitude = mLocation.getLongitude();
+            }
+        }
     }
 
     @Override

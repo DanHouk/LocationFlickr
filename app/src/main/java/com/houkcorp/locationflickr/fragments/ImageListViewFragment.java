@@ -3,6 +3,10 @@ package com.houkcorp.locationflickr.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.activities.ImageDetailActivity;
 import com.houkcorp.locationflickr.adapters.ImageBaseViewAdapter;
+import com.houkcorp.locationflickr.databinding.FragmentImageGridViewBinding;
 import com.houkcorp.locationflickr.model.FlickrImageSearchResults;
 import com.houkcorp.locationflickr.model.ImageBasicInfo;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
@@ -43,32 +48,30 @@ public class ImageListViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*if(savedInstanceState != null) {
-            mFlickrImageHolder = savedInstanceState.getParcelable(Constants.FLICKR_IMAGE);
-            if(mFlickrImageHolder != null) {
-                mFlickrImages = mFlickrImageHolder.getPhotos();
-            }
-
-        } else*/
         if(savedInstanceState == null) {
             mFlickrImages = new ArrayList<>();
         }
 
-        setRetainInstance(true);
         handleFetchImages();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View gridLayoutView = inflater.inflate(R.layout.fragment_image_grid_view, container, false);
+        FragmentImageGridViewBinding binding =
+                FragmentImageGridViewBinding.inflate(inflater, container, false);
         mImageBaseViewAdapter =
                 new ImageBaseViewAdapter(getActivity(), mFlickrImages);
-        mImageGridView = (GridView)gridLayoutView.findViewById(R.id.image_grid_view);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
+        RecyclerView mRecyclerView = binding.imageGridRv;
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
         mImageGridView.setAdapter(mImageBaseViewAdapter);
+        mProgressBar = binding.imageGridPb;
 
-        mProgressBar = (ProgressBar) gridLayoutView.findViewById(R.id.image_grid_progressbar);
-
+        /*FIXME: Make this get the new stuff properly with refresh.*/
         mImageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -84,6 +87,7 @@ public class ImageListViewFragment extends Fragment {
             }
         });
 
+        /*FIXME:Setup a view model with the proper stuff to make this happen from the View*/
         mImageGridView.setOnItemClickListener((parent, view, position, id) -> {
             FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
             if (selectedImage != null) {
@@ -93,7 +97,7 @@ public class ImageListViewFragment extends Fragment {
             }
         });
 
-        return gridLayoutView;
+        return binding.getRoot();
     }
 
     /*FIXME: Is this needed?*/

@@ -1,6 +1,7 @@
 package com.houkcorp.locationflickr.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.houkcorp.locationflickr.Constants;
+import com.houkcorp.locationflickr.databinding.ItemImageListImageViewBinding;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.squareup.picasso.Picasso;
 
@@ -40,6 +42,7 @@ public class ImageBaseViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //ItemImageListImageViewBinding binding = ItemImageListImageViewBinding.inflate(LayoutInflater.from())
         ImageView imageView;
 
         if(convertView == null) {

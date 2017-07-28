@@ -1,6 +1,7 @@
 package com.houkcorp.locationflickr;
 
 public class Constants {
+    /*FIXME: Need to update this file and possible remove it and rethink constants.*/
     //Default URL _t for thumbnail and _z for full image.
     public static final String DEFAULT_IMAGE_URL = "https://farm%d.staticflickr.com/%s/%s_%s_%s.jpg";
     public static final String FLICKR_IMAGE = "flickr_image";

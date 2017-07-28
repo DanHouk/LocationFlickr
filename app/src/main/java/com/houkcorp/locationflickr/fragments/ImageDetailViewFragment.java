@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.houkcorp.locationflickr.Constants;
@@ -27,11 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
+/*FIXME: Remove anything no longer needed.*/
 public class ImageDetailViewFragment extends Fragment {
     private Bitmap mBitmap;
     private FlickrPhoto mFlickrPhoto;
@@ -61,6 +56,7 @@ public class ImageDetailViewFragment extends Fragment {
         return imageDetailViewFragment;
     }
 
+    /*FIXME: Add logiv\c or remove.*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,6 +141,7 @@ public class ImageDetailViewFragment extends Fragment {
                 .subscribe(new Subscriber<ImageMetaDataResults>() {
                     @Override
                     public void onCompleted() {
+                        /*FIXME: This is broke.*/
                     }
 
                     @Override

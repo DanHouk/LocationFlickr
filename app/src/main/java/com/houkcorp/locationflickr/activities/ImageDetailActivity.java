@@ -35,6 +35,7 @@ public class ImageDetailActivity extends BaseActivity {
             addFragment();
         }
 
+        /*FIXME: Possible null pointer*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

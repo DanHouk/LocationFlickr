@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Date;
 
+/*FIXME: Is this either needed or anything else?  Remove Serialzed if not needed.  Lets look into
+* view models.*/
 public class PhotoMetaData {
     @SerializedName("id") private String id;
     @SerializedName("secret") private String secret;

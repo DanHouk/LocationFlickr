@@ -25,11 +25,6 @@ import com.houkcorp.locationflickr.util.LocationTracker;
 
 import java.util.ArrayList;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
 public class ImageListViewFragment extends Fragment {
     private GridView mImageGridView;
     private ProgressBar mProgressBar;
@@ -89,26 +84,25 @@ public class ImageListViewFragment extends Fragment {
             }
         });
 
-        mImageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
-                if (selectedImage != null) {
-                   Intent detailIntent = ImageDetailActivity.newIntent(getContext(), selectedImage);
+        mImageGridView.setOnItemClickListener((parent, view, position, id) -> {
+            FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
+            if (selectedImage != null) {
+               Intent detailIntent = ImageDetailActivity.newIntent(getContext(), selectedImage);
 
-                    startActivity(detailIntent);
-                }
+                startActivity(detailIntent);
             }
         });
 
         return gridLayoutView;
     }
 
+    /*FIXME: Is this needed?*/
     @Override
     public void onDetach() {
         super.onDetach();
     }
 
+    /*FIXME: Is this needed?*/
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -138,10 +132,12 @@ public class ImageListViewFragment extends Fragment {
                 .subscribe(new Subscriber<FlickrImageSearchResults>() {
                     @Override
                     public void onCompleted() {
+                        /*FIXME: This is broke.*/
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        /*FIXME: This is broke.*/
                     }
 
                     @Override
@@ -175,6 +171,7 @@ public class ImageListViewFragment extends Fragment {
         mLoadMoreCalled = false;
     }
 
+    /*FIXME: Is this needed?.*/
     public void clearListAndReQuery() {
         /*if(mCallbacks == null) {
             Toast.makeText(getActivity(), R.string.refreshing_please_wait, Toast.LENGTH_LONG).show();

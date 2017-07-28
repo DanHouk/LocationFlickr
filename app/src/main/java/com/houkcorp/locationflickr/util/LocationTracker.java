@@ -28,7 +28,7 @@ public class LocationTracker implements LocationListener {
     }
 
 
-
+/*FIXME: This is old school and way too complicated.*/
     public LocationHolder getLocation() {
         mLocationHolder = new LocationHolder();
         mLocationManager =
@@ -41,12 +41,7 @@ public class LocationTracker implements LocationListener {
                     .setTitle(R.string.location_error)
                     .setMessage(R.string.gps_and_network_disabled)
                     .setCancelable(false)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -55,8 +50,6 @@ public class LocationTracker implements LocationListener {
         }
 
         if(gpsEnabeled) {
-            int temp = 0;
-
             //int fineCheckInt =
             int coarseCheckInt = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION);
             int fineCheckInt = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);

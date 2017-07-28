@@ -9,6 +9,7 @@ import com.houkcorp.locationflickr.R;
 
 import java.util.ArrayList;
 
+/*FIXME: Does any of this need to stay?*/
 public abstract class BaseActivity extends AppCompatActivity {
     private Toolbar mToolbar;
 
@@ -23,6 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if(mToolbar != null) {
             setSupportActionBar(mToolbar);
+            /*FIXME: Possible null pointer*/
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
@@ -33,6 +35,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setHomeButton() {
+        /*FIXME: Possible null pointer*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

@@ -3,7 +3,7 @@ package com.houkcorp.locationflickr.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-
+/*FIXME: Is this file needed?*/
 public class ImageBasicInfo {
     @SerializedName("page") private int page;
     @SerializedName("pages") private int pages;

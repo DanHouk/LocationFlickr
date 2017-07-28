@@ -5,9 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
 
 public class ServiceFactory {
     public static final String META_DATA_URL =
@@ -22,7 +20,7 @@ public class ServiceFactory {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(META_DATA_URL)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 

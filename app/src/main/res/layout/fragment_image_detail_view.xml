@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <!--Todo: Useless layout-->
 
         <LinearLayout
             android:id="@+id/image_detail_layout"
@@ -53,6 +54,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/view_count"
@@ -76,6 +79,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/users_name_header"
@@ -99,6 +104,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/location"
@@ -122,6 +129,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/description"
@@ -145,6 +154,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/taken_date_header"
@@ -168,6 +179,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
                         android:text="@string/posted_date_header"

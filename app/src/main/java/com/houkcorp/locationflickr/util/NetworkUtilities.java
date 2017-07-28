@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
+/*FIXME: THis is old and definitely needs to be updated.*/
 public class NetworkUtilities {
     public NetworkUtilities(){
     }

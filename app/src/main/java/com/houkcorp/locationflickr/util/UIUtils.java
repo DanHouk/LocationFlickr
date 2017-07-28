@@ -13,16 +13,12 @@ public class UIUtils {
      * @param titleResourceInt The resource for the title.
      * @param message The message to be displayed.
      */
+    /*FIXME:THis is way too dependent.*/
     public static void showDialogMessage(Context context, int titleResourceInt, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context)
                 .setTitle(titleResourceInt)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();

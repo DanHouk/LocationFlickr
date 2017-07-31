@@ -2,6 +2,7 @@ package com.houkcorp.locationflickr.service;
 
 import com.houkcorp.locationflickr.model.ImageMetaDataResults;
 
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 

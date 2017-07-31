@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,15 @@ import com.houkcorp.locationflickr.service.MetaDataService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.squareup.picasso.Picasso;
 
+import org.reactivestreams.Subscriber;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /*FIXME: Remove anything no longer needed.*/
 public class ImageDetailViewFragment extends Fragment {
@@ -86,31 +93,31 @@ public class ImageDetailViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_image_detail_view, container, false);
 
-        mImageView = (ImageView)view.findViewById(R.id.image_detail_image_view_id);
-        if(mBitmap != null) {
+        mImageView = (ImageView) view.findViewById(R.id.image_detail_image_view_id);
+        if (mBitmap != null) {
             mImageView.setImageBitmap(mBitmap);
         }
 
         /*mImageDetailProgressBar = (ProgressBar)view.findViewById(R.id.image_grid_progressbar);*/
 
-        mImageDetailLayout = (LinearLayout)view.findViewById(R.id.image_detail_layout);
-        mUserNameLayout = (LinearLayout)view.findViewById(R.id.user_name_layout);
-        mLocationLayout = (LinearLayout)view.findViewById(R.id.location_layout);
-        mViewsLayout = (LinearLayout)view.findViewById(R.id.views_layout);
-        mDescriptionLayout = (LinearLayout)view.findViewById(R.id.description_layout);
-        mTakenDateLayout = (LinearLayout)view.findViewById(R.id.taken_date_layout);
-        mPostedDateLayout = (LinearLayout)view.findViewById(R.id.posted_date_layout);
+        mImageDetailLayout = (LinearLayout) view.findViewById(R.id.image_detail_layout);
+        mUserNameLayout = (LinearLayout) view.findViewById(R.id.user_name_layout);
+        mLocationLayout = (LinearLayout) view.findViewById(R.id.location_layout);
+        mViewsLayout = (LinearLayout) view.findViewById(R.id.views_layout);
+        mDescriptionLayout = (LinearLayout) view.findViewById(R.id.description_layout);
+        mTakenDateLayout = (LinearLayout) view.findViewById(R.id.taken_date_layout);
+        mPostedDateLayout = (LinearLayout) view.findViewById(R.id.posted_date_layout);
 
-        mImageTitleTextView = (TextView)view.findViewById(R.id.image_title_text_view_id);
-        mViewCountTextView = (TextView)view.findViewById(R.id.view_count_text_view);
-        mUserNameTextView = (TextView)view.findViewById(R.id.user_name_text_view_id);
-        mLocationTextView = (TextView)view.findViewById(R.id.location_text_view_id);
-        mDescriptionTextView = (TextView)view.findViewById(R.id.description_text_view_id);
-        mPostedDateTextView = (TextView)view.findViewById(R.id.posted_date_text_view);
-        mTakenDateTextView = (TextView)view.findViewById(R.id.taken_date_text_view);
+        mImageTitleTextView = (TextView) view.findViewById(R.id.image_title_text_view_id);
+        mViewCountTextView = (TextView) view.findViewById(R.id.view_count_text_view);
+        mUserNameTextView = (TextView) view.findViewById(R.id.user_name_text_view_id);
+        mLocationTextView = (TextView) view.findViewById(R.id.location_text_view_id);
+        mDescriptionTextView = (TextView) view.findViewById(R.id.description_text_view_id);
+        mPostedDateTextView = (TextView) view.findViewById(R.id.posted_date_text_view);
+        mTakenDateTextView = (TextView) view.findViewById(R.id.taken_date_text_view);
 
         Bundle extras = getActivity().getIntent().getExtras();
-        if(extras != null) {
+        if (extras != null) {
             mFlickrPhoto = extras.getParcelable(ImageDetailActivity.EXTRA_FLICKR_PHOTO);
             Picasso.with(getContext())
                     .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
@@ -126,7 +133,7 @@ public class ImageDetailViewFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-       // outState.putParcelable(Constants.FLICKR_IMAGE, mFlickrImage);
+        // outState.putParcelable(Constants.FLICKR_IMAGE, mFlickrImage);
         outState.putParcelable("bitmap", mBitmap);
 
         super.onSaveInstanceState(outState);
@@ -138,23 +145,8 @@ public class ImageDetailViewFragment extends Fragment {
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ImageMetaDataResults>() {
-                    @Override
-                    public void onCompleted() {
-                        /*FIXME: This is broke.*/
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println("This is where we are at: onError: " + e.getLocalizedMessage());
-                    }
-
-                    @Override
-                    public void onNext(ImageMetaDataResults imageMetaDataResults) {
-                        displayMetaData(imageMetaDataResults);
-                    }
-                });
-        }
+                .subscribe(this::displayMetaData, error -> Log.e("ImageDetailViewFrag", error.getLocalizedMessage()));
+    }
 
     private void displayMetaData(ImageMetaDataResults imageMetaDataResults) {
         PhotoMetaData photoData = imageMetaDataResults.getPhoto();

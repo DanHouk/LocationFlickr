@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -21,8 +20,8 @@ import com.houkcorp.locationflickr.activities.ImageDetailActivity;
 import com.houkcorp.locationflickr.adapters.ImageBaseViewAdapter;
 import com.houkcorp.locationflickr.databinding.FragmentImageGridViewBinding;
 import com.houkcorp.locationflickr.model.FlickrImageSearchResults;
-import com.houkcorp.locationflickr.model.ImageBasicInfo;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
+import com.houkcorp.locationflickr.model.ImageBasicInfo;
 import com.houkcorp.locationflickr.model.LocationHolder;
 import com.houkcorp.locationflickr.service.PhotoService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
@@ -30,9 +29,13 @@ import com.houkcorp.locationflickr.util.LocationTracker;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 public class ImageListViewFragment extends Fragment {
-    private GridView mImageGridView;
     private ProgressBar mProgressBar;
+    private RecyclerView mRecyclerView;
 
     public static ImageListViewFragment newInstance() {
         return new ImageListViewFragment();
@@ -61,18 +64,17 @@ public class ImageListViewFragment extends Fragment {
         FragmentImageGridViewBinding binding =
                 FragmentImageGridViewBinding.inflate(inflater, container, false);
         mImageBaseViewAdapter =
-                new ImageBaseViewAdapter(getActivity(), mFlickrImages);
+                new ImageBaseViewAdapter(mFlickrImages);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
-        RecyclerView mRecyclerView = binding.imageGridRv;
+        mRecyclerView = binding.imageGridRv;
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        mImageGridView.setAdapter(mImageBaseViewAdapter);
+        mRecyclerView.setAdapter(mImageBaseViewAdapter);
         mProgressBar = binding.imageGridPb;
 
         /*FIXME: Make this get the new stuff properly with refresh.*/
-        mImageGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        /*binding.imageGridRv.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
@@ -85,17 +87,17 @@ public class ImageListViewFragment extends Fragment {
                     handleFetchImages();
                 }
             }
-        });
+        });*/
 
         /*FIXME:Setup a view model with the proper stuff to make this happen from the View*/
-        mImageGridView.setOnItemClickListener((parent, view, position, id) -> {
+        /*binding.imageGridRv.setOnClickListener((parent, view, position, id) -> {
             FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
             if (selectedImage != null) {
                Intent detailIntent = ImageDetailActivity.newIntent(getContext(), selectedImage);
 
                 startActivity(detailIntent);
             }
-        });
+        });*/
 
         return binding.getRoot();
     }
@@ -118,8 +120,8 @@ public class ImageListViewFragment extends Fragment {
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
-        if(mImageGridView != null) {
-            mImageGridView.setVisibility(View.GONE);
+        if(mRecyclerView != null) {
+            mRecyclerView.setVisibility(View.GONE);
         }
 
         LocationTracker locationTracker = new LocationTracker(getActivity());
@@ -133,22 +135,7 @@ public class ImageListViewFragment extends Fragment {
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<FlickrImageSearchResults>() {
-                    @Override
-                    public void onCompleted() {
-                        /*FIXME: This is broke.*/
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        /*FIXME: This is broke.*/
-                    }
-
-                    @Override
-                    public void onNext(FlickrImageSearchResults flickrImageSearchResults) {
-                        displayImages(flickrImageSearchResults);
-                    }
-                });
+                .subscribe(this::displayImages, error -> Log.e("ImageListView", error.getLocalizedMessage()));
     }
 
     private void displayImages(FlickrImageSearchResults flickrImageSearchResults) {
@@ -156,8 +143,8 @@ public class ImageListViewFragment extends Fragment {
             mProgressBar.setVisibility(View.GONE);
         }
 
-        if(mImageGridView != null) {
-            mImageGridView.setVisibility(View.VISIBLE);
+        if(mRecyclerView != null) {
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
 
         ImageBasicInfo imageBasicInfo = flickrImageSearchResults.getPhotos();
@@ -167,8 +154,8 @@ public class ImageListViewFragment extends Fragment {
                 Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
                         .show();
             }
-            mImageBaseViewAdapter.clearArray();
-            mImageBaseViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());
+            /*mImageBaseViewAdapter.clearArray();
+            mImageBaseViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());*/
             mImageBaseViewAdapter.notifyDataSetChanged();
 
         mFlickrImageSearchResults = flickrImageSearchResults;

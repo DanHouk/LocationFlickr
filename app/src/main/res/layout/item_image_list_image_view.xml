@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
+        android:id="@+id/image_list_iv"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
         android:contentDescription="@string/user_flickr_image"

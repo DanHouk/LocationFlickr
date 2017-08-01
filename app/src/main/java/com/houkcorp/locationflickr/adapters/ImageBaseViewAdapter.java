@@ -2,12 +2,9 @@ package com.houkcorp.locationflickr.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.houkcorp.locationflickr.Constants;
-import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.databinding.ItemImageListImageViewBinding;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.squareup.picasso.Picasso;

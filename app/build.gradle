@@ -105,7 +105,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
 
     //OKHttp
-    compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
 
     //Picasso
     compile 'com.squareup.picasso:picasso:2.5.2'

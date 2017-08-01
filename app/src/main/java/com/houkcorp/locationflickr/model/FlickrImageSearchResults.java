@@ -1,11 +1,9 @@
 package com.houkcorp.locationflickr.model;
 
-import com.google.gson.annotations.SerializedName;
-
-/*FIXME: This does not need to be used.*/
+/*FIXME: Is this class actually used for anything at all?.*/
 public class FlickrImageSearchResults {
-    @SerializedName("photos") private ImageBasicInfo photos;
-    @SerializedName("stat") private String stat;
+    private ImageBasicInfo photos;
+    private String stat;
 
     public ImageBasicInfo getPhotos() {
         return photos;

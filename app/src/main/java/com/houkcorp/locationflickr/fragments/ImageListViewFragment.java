@@ -1,6 +1,5 @@
 package com.houkcorp.locationflickr.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -10,14 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.houkcorp.locationflickr.R;
-import com.houkcorp.locationflickr.activities.ImageDetailActivity;
-import com.houkcorp.locationflickr.adapters.ImageBaseViewAdapter;
+import com.houkcorp.locationflickr.adapters.ImageListRecyclerViewAdapter;
 import com.houkcorp.locationflickr.databinding.FragmentImageGridViewBinding;
 import com.houkcorp.locationflickr.model.FlickrImageSearchResults;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
@@ -33,6 +29,10 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * TODO: Need to hook up on click.  Need to hook up refresh.  Need to hook up paging.  Need to hook up diffing.
+ * Update location services.
+ */
 public class ImageListViewFragment extends Fragment {
     private ProgressBar mProgressBar;
     private RecyclerView mRecyclerView;
@@ -42,7 +42,7 @@ public class ImageListViewFragment extends Fragment {
     }
 
     private ArrayList<FlickrPhoto> mFlickrImages;
-    private ImageBaseViewAdapter mImageBaseViewAdapter;
+    private ImageListRecyclerViewAdapter mImageListRecyclerViewAdapter;
     private int mPageNumber = 1;
     private FlickrImageSearchResults mFlickrImageSearchResults;
     private boolean mLoadMoreCalled = false;
@@ -51,7 +51,7 @@ public class ImageListViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             mFlickrImages = new ArrayList<>();
         }
 
@@ -63,14 +63,14 @@ public class ImageListViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         FragmentImageGridViewBinding binding =
                 FragmentImageGridViewBinding.inflate(inflater, container, false);
-        mImageBaseViewAdapter =
-                new ImageBaseViewAdapter(mFlickrImages);
+        mImageListRecyclerViewAdapter =
+                new ImageListRecyclerViewAdapter(new ArrayList<>());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
         mRecyclerView = binding.imageGridRv;
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mImageBaseViewAdapter);
+        mRecyclerView.setAdapter(mImageListRecyclerViewAdapter);
         mProgressBar = binding.imageGridPb;
 
         /*FIXME: Make this get the new stuff properly with refresh.*/
@@ -116,11 +116,11 @@ public class ImageListViewFragment extends Fragment {
     }
 
     private void handleFetchImages() {
-        if(mProgressBar != null) {
+        if (mProgressBar != null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
-        if(mRecyclerView != null) {
+        if (mRecyclerView != null) {
             mRecyclerView.setVisibility(View.GONE);
         }
 
@@ -139,24 +139,27 @@ public class ImageListViewFragment extends Fragment {
     }
 
     private void displayImages(FlickrImageSearchResults flickrImageSearchResults) {
-        if(mProgressBar != null) {
+        if (mProgressBar != null) {
             mProgressBar.setVisibility(View.GONE);
         }
 
-        if(mRecyclerView != null) {
+        if (mRecyclerView != null) {
             mRecyclerView.setVisibility(View.VISIBLE);
         }
 
         ImageBasicInfo imageBasicInfo = flickrImageSearchResults.getPhotos();
-            if(mPageNumber < imageBasicInfo.getPage() && mPageNumber <= imageBasicInfo.getPages()) {
-                mPageNumber++;
-            } else if(imageBasicInfo.getPages() == mPageNumber) {
-                Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
-                        .show();
-            }
-            /*mImageBaseViewAdapter.clearArray();
-            mImageBaseViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());*/
-            mImageBaseViewAdapter.notifyDataSetChanged();
+        if (mPageNumber < imageBasicInfo.getPage() && mPageNumber <= imageBasicInfo.getPages()) {
+            mPageNumber++;
+        } else if (imageBasicInfo.getPages() == mPageNumber) {
+            Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
+                    .show();
+        }
+        mImageListRecyclerViewAdapter = new ImageListRecyclerViewAdapter(flickrImageSearchResults.getPhotos().getPhoto());
+        mRecyclerView.setAdapter(mImageListRecyclerViewAdapter);
+            /*mImageListRecyclerViewAdapter.clearArray();
+            //TODO: Hook up diffing tool here.
+            mImageListRecyclerViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());*/
+        mImageListRecyclerViewAdapter.notifyDataSetChanged();
 
         mFlickrImageSearchResults = flickrImageSearchResults;
         mLoadMoreCalled = false;
@@ -168,12 +171,12 @@ public class ImageListViewFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.refreshing_please_wait, Toast.LENGTH_LONG).show();
             mFlickrImages = new ArrayList<>();
             mPageNumber = 1;
-            mImageBaseViewAdapter.clearArray();
-            mImageBaseViewAdapter.notifyDataSetChanged();
+            mImageListRecyclerViewAdapter.clearArray();
+            mImageListRecyclerViewAdapter.notifyDataSetChanged();
 
             handleFetchImages();
         } else {
-            Toast.makeText(getActivity(), R.string.sync_in_progress, Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.sync_in_progress, Toast.LENGTH_      LONG).show();
         }*/
     }
 }

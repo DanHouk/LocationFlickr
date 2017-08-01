@@ -6,15 +6,15 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 /*FIXME: Does this need to be a Parcelable?  Also remove all SerializedNames.  Remove anything unused.*/
 public class FlickrPhoto implements Parcelable {
-    @SerializedName("id") private String id;
-    @SerializedName("owner") private String owner;
-    @SerializedName("secret") private String secret;
-    @SerializedName("server") private String server;
-    @SerializedName("farm") private int farm;
-    @SerializedName("title") private String title;
+    private String id;
+    private String owner;
+    private String secret;
+    private String server;
+    private int farm;
+    private String title;
     @SerializedName("ispublic") private int isPublic;
     @SerializedName("isfriend") private int isFriend;
-    @SerializedName("isFamily") private int isFamily;
+    private int isFamily;
 
     protected FlickrPhoto(Parcel in) {
         id = in.readString();

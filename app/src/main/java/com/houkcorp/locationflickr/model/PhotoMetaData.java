@@ -8,31 +8,31 @@ import java.util.Date;
 /*FIXME: Is this either needed or anything else?  Remove Serialzed if not needed.  Lets look into
 * view models.*/
 public class PhotoMetaData {
-    @SerializedName("id") private String id;
-    @SerializedName("secret") private String secret;
-    @SerializedName("server") private String server;
-    @SerializedName("farm") private int farm;
+    private String id;
+    private String secret;
+    private String server;
+    private int farm;
     @SerializedName("dateuploaded") private String dateUploaded;
     @SerializedName("isfavorite") private int isFavorite;
-    @SerializedName("license") private String license;
-    @SerializedName("rotation") private int rotation;
-    @SerializedName("originalsecret") private String originalsecret;
-    @SerializedName("originalformat") private String originalformat;
-    @SerializedName("views") private String views;
-    @SerializedName("media") private String media;
+    private String license;
+    private int rotation;
+    @SerializedName("originalsecret") private String originalSecret;
+    @SerializedName("originalformat") private String originalFormat;
+    private String views;
+    private String media;
 
     //TODO: set all of this up and hook it up.
-    @SerializedName("owner") private DataOwner owner;
-    @SerializedName("title") private DataTitle title;
-    @SerializedName("description") private DataDescription description;
-    @SerializedName("visibility") private DataVisibility visibility;
-    @SerializedName("dates") private DataDates dates;
+    private DataOwner owner;
+    private DataTitle title;
+    private DataDescription description;
+    private DataVisibility visibility;
+    private DataDates dates;
 
-    @SerializedName("comments") private DataComments comments;
-    @SerializedName("tags") private DataTags tags;
-    @SerializedName("location") private DataLocation location;
+    private DataComments comments;
+    private DataTags tags;
+    private DataLocation location;
     @SerializedName("geoperms") private DataGEOPerms geoPerms;
-    @SerializedName("urls") private DataURLs urls;
+    private DataURLs urls;
 
     public String getId() {
         return id;
@@ -67,11 +67,11 @@ public class PhotoMetaData {
     }
 
     public String getOriginalsecret() {
-        return originalsecret;
+        return originalSecret;
     }
 
     public String getOriginalformat() {
-        return originalformat;
+        return originalFormat;
     }
 
     public String getViews() {
@@ -126,7 +126,7 @@ public class PhotoMetaData {
         @SerializedName("nsid") private String id;
         @SerializedName("username") private String userName;
         @SerializedName("realname") private String realName;
-        @SerializedName("location") private String location;
+        private String location;
         @SerializedName("path_alias") private String juanomatic;
 
         public String getId() {
@@ -185,8 +185,8 @@ public class PhotoMetaData {
     }
 
     public class DataDates {
-        @SerializedName("posted") private String posted;
-        @SerializedName("taken") private Date taken;
+        private String posted;
+        private Date taken;
 
         @SerializedName("lastupdate") private String lastUpdate;
 
@@ -212,7 +212,7 @@ public class PhotoMetaData {
     }
 
     public class DataTags {
-        @SerializedName("tag") private ArrayList<DataTag> tag;
+        private ArrayList<DataTag> tag;
 
         public ArrayList<DataTag> getTag() {
             return tag;
@@ -220,10 +220,10 @@ public class PhotoMetaData {
     }
 
     public class DataTag {
-        @SerializedName("id") private String id;
-        @SerializedName("author") private String author;
+        private String id;
+        private String author;
         @SerializedName("authorname") private String authorName;
-        @SerializedName("raw") private String raw;
+        private String raw;
         @SerializedName("_content") private String content;
         @SerializedName("machinetag") private int machineTag;
 
@@ -253,10 +253,10 @@ public class PhotoMetaData {
     }
 
     public class DataLocation {
-        @SerializedName("latitude") private String latitude;
-        @SerializedName("longitude") private String longitude;
-        @SerializedName("accuracy") private String accuracy;
-        @SerializedName("context") private String context;
+        private String latitude;
+        private String longitude;
+        private String accuracy;
+        private String context;
 
         public String getLatitude() {
             return latitude;
@@ -299,7 +299,7 @@ public class PhotoMetaData {
     }
 
     public class DataURLs {
-        @SerializedName("url") private ArrayList<DataURL> url;
+        private ArrayList<DataURL> url;
 
         public ArrayList<DataURL> getUrls() {
             return url;
@@ -307,11 +307,7 @@ public class PhotoMetaData {
     }
 
     public class DataURL {
-        @SerializedName("type") private String type;
+        private String type;
         @SerializedName("_content") private String content;
-
-
     }
-
-
 }

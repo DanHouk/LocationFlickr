@@ -1,12 +1,17 @@
 package com.houkcorp.locationflickr.fragments;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -14,14 +19,14 @@ import android.widget.Toast;
 
 import com.houkcorp.locationflickr.R;
 import com.houkcorp.locationflickr.adapters.ImageListRecyclerViewAdapter;
-import com.houkcorp.locationflickr.databinding.FragmentImageGridViewBinding;
+import com.houkcorp.locationflickr.databinding.FragmentImageListViewBinding;
 import com.houkcorp.locationflickr.model.FlickrImageSearchResults;
-import com.houkcorp.locationflickr.model.FlickrPhoto;
 import com.houkcorp.locationflickr.model.ImageBasicInfo;
 import com.houkcorp.locationflickr.model.LocationHolder;
 import com.houkcorp.locationflickr.service.PhotoService;
 import com.houkcorp.locationflickr.service.ServiceFactory;
 import com.houkcorp.locationflickr.util.LocationTracker;
+import com.houkcorp.locationflickr.util.UIUtils;
 
 import java.util.ArrayList;
 
@@ -33,45 +38,48 @@ import io.reactivex.schedulers.Schedulers;
  * TODO: Need to hook up on click.  Need to hook up refresh.  Need to hook up paging.  Need to hook up diffing.
  * Update location services.
  */
-public class ImageListViewFragment extends Fragment {
+public class ImageListViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private ProgressBar mProgressBar;
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ImageListRecyclerViewAdapter mImageListRecyclerViewAdapter;
+    private int mPageNumber = 1;
+    private boolean isLoading = false;
 
     public static ImageListViewFragment newInstance() {
         return new ImageListViewFragment();
     }
 
-    private ArrayList<FlickrPhoto> mFlickrImages;
-    private ImageListRecyclerViewAdapter mImageListRecyclerViewAdapter;
-    private int mPageNumber = 1;
-    private FlickrImageSearchResults mFlickrImageSearchResults;
-    private boolean mLoadMoreCalled = false;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            mFlickrImages = new ArrayList<>();
-        }
-
-        handleFetchImages();
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FragmentImageGridViewBinding binding =
-                FragmentImageGridViewBinding.inflate(inflater, container, false);
+        FragmentImageListViewBinding binding =
+                FragmentImageListViewBinding.inflate(inflater, container, false);
         mImageListRecyclerViewAdapter =
                 new ImageListRecyclerViewAdapter(new ArrayList<>());
 
+        //Recycler View
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
         mRecyclerView = binding.imageGridRv;
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mImageListRecyclerViewAdapter);
+
+        //Progress Bar
         mProgressBar = binding.imageGridPb;
+
+        //Swipe Refresh Layout
+        mSwipeRefreshLayout = binding.imageGridSrl;
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        handleFetchImages();
 
         /*FIXME: Make this get the new stuff properly with refresh.*/
         /*binding.imageGridRv.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -102,27 +110,42 @@ public class ImageListViewFragment extends Fragment {
         return binding.getRoot();
     }
 
-    /*FIXME: Is this needed?*/
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.menu_image_grid_view, menu);
     }
 
-    /*FIXME: Is this needed?*/
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //outState.putParcelable(Constants.FLICKR_IMAGE, mFlickrImageHolder);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about_menu:
+                String displayMessage;
+                try {
+                    int versionCode =
+                            getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionCode;
+                    displayMessage = getString(R.string.about_location_flickr, versionCode);
+                } catch (PackageManager.NameNotFoundException nameNotFoundException) {
+                    displayMessage = "N/A";
+                }
+
+                UIUtils.showDialogMessage(getContext(), R.string.about, displayMessage);
+
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void handleFetchImages() {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(View.VISIBLE);
+        if (isLoading) {
+            return;
         }
 
-        if (mRecyclerView != null) {
-            mRecyclerView.setVisibility(View.GONE);
-        }
+        isLoading = true;
+        mProgressBar.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
 
         LocationTracker locationTracker = new LocationTracker(getActivity());
         LocationHolder locationHolder = locationTracker.getLocation();
@@ -139,13 +162,8 @@ public class ImageListViewFragment extends Fragment {
     }
 
     private void displayImages(FlickrImageSearchResults flickrImageSearchResults) {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(View.GONE);
-        }
-
-        if (mRecyclerView != null) {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
+        mProgressBar.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
 
         ImageBasicInfo imageBasicInfo = flickrImageSearchResults.getPhotos();
         if (mPageNumber < imageBasicInfo.getPage() && mPageNumber <= imageBasicInfo.getPages()) {
@@ -156,27 +174,15 @@ public class ImageListViewFragment extends Fragment {
         }
         mImageListRecyclerViewAdapter = new ImageListRecyclerViewAdapter(flickrImageSearchResults.getPhotos().getPhoto());
         mRecyclerView.setAdapter(mImageListRecyclerViewAdapter);
-            /*mImageListRecyclerViewAdapter.clearArray();
-            //TODO: Hook up diffing tool here.
-            mImageListRecyclerViewAdapter.addFlickrImages(imageBasicInfo.getPhoto());*/
         mImageListRecyclerViewAdapter.notifyDataSetChanged();
 
-        mFlickrImageSearchResults = flickrImageSearchResults;
-        mLoadMoreCalled = false;
+        mSwipeRefreshLayout.setRefreshing(false);
+        isLoading = false;
     }
 
-    /*FIXME: Is this needed?.*/
-    public void clearListAndReQuery() {
-        /*if(mCallbacks == null) {
-            Toast.makeText(getActivity(), R.string.refreshing_please_wait, Toast.LENGTH_LONG).show();
-            mFlickrImages = new ArrayList<>();
-            mPageNumber = 1;
-            mImageListRecyclerViewAdapter.clearArray();
-            mImageListRecyclerViewAdapter.notifyDataSetChanged();
-
-            handleFetchImages();
-        } else {
-            Toast.makeText(getActivity(), R.string.sync_in_progress, Toast.LENGTH_      LONG).show();
-        }*/
+    @Override
+    public void onRefresh() {
+        handleFetchImages();
+        mImageListRecyclerViewAdapter.clearArray();
     }
 }

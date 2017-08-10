@@ -44,6 +44,9 @@ public class ImageListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return mFlickrImages.size();
     }
 
+    /**
+     * The ViewHolder that holds the bindings and the views for the image in the GridView.
+     */
     private class ImageViewHolder extends RecyclerView.ViewHolder {
         private ItemImageListImageViewBinding mBinding;
 
@@ -58,11 +61,21 @@ public class ImageListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
+    /*FIXME:Hook up diff tool*/
+
+    /**
+     *
+     */
     public void clearArray() {
         mFlickrImages = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
+    /**
+     * Adds more flickr images to the already existing list.
+     * @param flickrPhotos
+     */
     public void addFlickrImages(ArrayList<FlickrPhoto> flickrPhotos) {
-        mFlickrImages = flickrPhotos;
+        mFlickrImages.addAll(flickrPhotos);
     }
 }

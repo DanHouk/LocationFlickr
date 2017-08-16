@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="v21_AppTheme" parent="BaseTheme">
+        <item name="android:colorPrimary">#007f00</item>
+        <item name="android:colorPrimaryDark">#007f00</item>
+    </style>
+
+    <style name="AppTheme" parent="v21_AppTheme"></style>
+</resources>

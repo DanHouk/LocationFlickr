@@ -4,6 +4,8 @@
     <string name="app_name">Location Flickr</string>
 
     <string name="description">Description:</string>
+
+    <string name="flickr_images">Image List</string>
     <string name="full_image">Full Image</string>
 
     <string name="gps_and_network_disabled">GPS and Network disabled!</string>
@@ -21,9 +23,8 @@
     <string name="taken_date_header">Taken:</string>
     <string name="title_activity_image_detail_view">ImageDetailView</string>
 
+    <string name="user_flickr_image">A users Flickr image.</string>
     <string name="users_name_header">User name:</string>
 
     <string name="view_count">Views:</string>
-    <string name="user_flickr_image">A users Flickr image.</string>
-    <string name="flickr_images">Image List</string>
 </resources>

@@ -3,17 +3,12 @@ package com.houkcorp.locationflickr.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.houkcorp.locationflickr.R;
-
-import java.util.ArrayList;
 
 /*FIXME: Does any of this need to stay?*/
 public abstract class BaseActivity extends AppCompatActivity {
     private Toolbar mToolbar;
-
-    private ArrayList<View> mHideableHeaderViews = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +17,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutResources());
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(mToolbar != null) {
+        if (mToolbar != null) {
             setSupportActionBar(mToolbar);
-            /*FIXME: Possible null pointer*/
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
@@ -32,11 +26,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public Toolbar getToolbar() {
         return mToolbar;
-    }
-
-    public void setHomeButton() {
-        /*FIXME: Possible null pointer*/
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     protected abstract int getLayoutResources();

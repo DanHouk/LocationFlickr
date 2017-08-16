@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.houkcorp.locationflickr.Constants;
 import com.houkcorp.locationflickr.databinding.ItemImageListImageViewBinding;
 import com.houkcorp.locationflickr.model.FlickrPhoto;
+import com.houkcorp.locationflickr.presenters.ImageListPresenter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -31,8 +32,11 @@ public class ImageListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
         FlickrPhoto flickrPhoto = mFlickrImages.get(position);
+        ItemImageListImageViewBinding binding = imageViewHolder.getBinding();
+        binding.setPhoto(flickrPhoto);
+        binding.setPresenter(new ImageListPresenter());
 
-        Picasso.with(imageViewHolder.getBinding().getRoot().getContext())
+        Picasso.with(binding.getRoot().getContext())
                 .load(String.format(Locale.getDefault(), Constants.DEFAULT_IMAGE_URL,
                         flickrPhoto.getFarm(), flickrPhoto.getServer(),
                         flickrPhoto.getId(), flickrPhoto.getSecret(), "t"))
@@ -61,10 +65,8 @@ public class ImageListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    /*FIXME:Hook up diff tool*/
-
     /**
-     *
+     * Clears our the array and refreshes the list.
      */
     public void clearArray() {
         mFlickrImages = new ArrayList<>();
@@ -73,7 +75,8 @@ public class ImageListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     /**
      * Adds more flickr images to the already existing list.
-     * @param flickrPhotos
+     *
+     * @param flickrPhotos The list of flickr images to load.
      */
     public void addFlickrImages(ArrayList<FlickrPhoto> flickrPhotos) {
         mFlickrImages.addAll(flickrPhotos);

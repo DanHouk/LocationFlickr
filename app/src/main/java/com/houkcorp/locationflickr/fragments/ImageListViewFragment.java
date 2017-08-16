@@ -35,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * TODO: Need to hook up on click.  Need to hook up refresh.  Need to hook up paging.  Need to hook up diffing.
+ * TODO: Need to hook up paging.  Need to hook up diffing.
  * Update location services.
  */
 public class ImageListViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -82,30 +82,17 @@ public class ImageListViewFragment extends Fragment implements SwipeRefreshLayou
         handleFetchImages();
 
         /*FIXME: Make this get the new stuff properly with refresh.*/
-        /*binding.imageGridRv.setOnScrollListener(new AbsListView.OnScrollListener() {
+        binding.imageGridRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(mFlickrImageSearchResults != null && (firstVisibleItem + visibleItemCount) >=
-                        mFlickrImageSearchResults.getPhotos().getPhoto().size() && !mLoadMoreCalled) {
-                    mLoadMoreCalled = true;
+                if (!binding.imageGridRv.canScrollVertically(1)) {
+                    isLoading = true;
                     handleFetchImages();
                 }
             }
-        });*/
-
-        /*FIXME:Setup a view model with the proper stuff to make this happen from the View*/
-        /*binding.imageGridRv.setOnClickListener((parent, view, position, id) -> {
-            FlickrPhoto selectedImage = mFlickrImageSearchResults.getPhotos().getPhoto().get(position);
-            if (selectedImage != null) {
-               Intent detailIntent = ImageDetailActivity.newIntent(getContext(), selectedImage);
-
-                startActivity(detailIntent);
-            }
-        });*/
+        });
 
         return binding.getRoot();
     }
@@ -172,7 +159,7 @@ public class ImageListViewFragment extends Fragment implements SwipeRefreshLayou
             Toast.makeText(getActivity(), R.string.last_page, Toast.LENGTH_LONG)
                     .show();
         }
-        mImageListRecyclerViewAdapter = new ImageListRecyclerViewAdapter(flickrImageSearchResults.getPhotos().getPhoto());
+        mImageListRecyclerViewAdapter.addFlickrImages(flickrImageSearchResults.getPhotos().getPhoto());
         mRecyclerView.setAdapter(mImageListRecyclerViewAdapter);
         mImageListRecyclerViewAdapter.notifyDataSetChanged();
 
@@ -182,7 +169,7 @@ public class ImageListViewFragment extends Fragment implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        handleFetchImages();
         mImageListRecyclerViewAdapter.clearArray();
+        handleFetchImages();
     }
 }

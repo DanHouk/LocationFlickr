@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+
+        <variable
+            name="presenter"
+            type="com.houkcorp.locationflickr.presenters.ImageListPresenter" />
+
+        <variable
+            name="photo"
+            type="com.houkcorp.locationflickr.model.FlickrPhoto" />
+    </data>
+
     <ImageView
         android:id="@+id/image_list_iv"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
+        android:layout_margin="@dimen/image_padding"
         android:contentDescription="@string/user_flickr_image"
-        android:padding="@dimen/image_padding"
+        android:onClick="@{(view) -> presenter.onDetailClicked(view, photo)}"
         android:scaleType="centerCrop" />
 </layout>
